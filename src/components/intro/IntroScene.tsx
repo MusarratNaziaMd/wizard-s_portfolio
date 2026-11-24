@@ -1,30 +1,33 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
+import type { IntroCanvasProps } from "./IntroCanvas";
+
+const DynamicIntroCanvas = dynamic<IntroCanvasProps>(
+  () => import("./IntroCanvas").then((mod) => mod.IntroCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute inset-0 bg-navy flex items-center justify-center">
+        <div className="w-6 h-6 rounded-full bg-gold/50 blur-sm animate-pulse" />
+      </div>
+    ),
+  }
+);
 
 export interface IntroSceneProps {
-  onComplete?: () => void;
+  isHovered: boolean;
+  isBloomed: boolean;
 }
 
-export const IntroScene: React.FC<IntroSceneProps> = ({ onComplete }) => {
+export const IntroScene: React.FC<IntroSceneProps> = ({
+  isHovered,
+  isBloomed,
+}) => {
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-navy flex items-center justify-center">
-      <div className="text-center z-10 px-4">
-        <h2 className="font-cinzel text-gold text-2xl md:text-4xl tracking-widest uppercase mb-4">
-          Archivist &amp; Sorcerer of Code
-        </h2>
-        <p className="font-cormorant text-parchment/80 italic text-lg md:text-xl max-w-xl mx-auto mb-6">
-          Entering the grand sanctum of digital craft.
-        </p>
-        {onComplete && (
-          <button
-            onClick={onComplete}
-            className="font-cinzel text-xs text-gold border border-gold/40 px-4 py-2 rounded uppercase tracking-widest hover:bg-gold/10 transition-colors"
-          >
-            Enter Chamber
-          </button>
-        )}
-      </div>
+    <div className="absolute inset-0 w-full h-full overflow-hidden bg-navy">
+      <DynamicIntroCanvas isHovered={isHovered} isBloomed={isBloomed} />
     </div>
   );
 };

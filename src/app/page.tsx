@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/ui/Navbar";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
+import { IntroOverlay } from "@/components/intro/IntroOverlay";
 import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
 import { Skills } from "@/components/sections/Skills";
@@ -13,6 +14,7 @@ export default function Home() {
   return (
     <SmoothScroll>
       <div className="min-h-screen bg-navy text-parchment flex flex-col selection:bg-gold/30 selection:text-gold relative">
+        <IntroOverlay />
         <ScrollProgress />
         <Navbar />
         <main className="flex-1 flex flex-col">

@@ -50,6 +50,14 @@ export interface ExperienceItem {
   highlights: string[];
 }
 
+export interface IntroContent {
+  hint: string;
+  skipButton: string;
+  enterButton: string;
+  orbAriaLabel: string;
+  spellCasting: string;
+}
+
 export interface SectionMeta {
   storyTitle: string;
   subtitle: string;
@@ -57,6 +65,7 @@ export interface SectionMeta {
 }
 
 export interface ContentData {
+  intro: IntroContent;
   profile: Profile;
   hero: SectionMeta & {
     ctaProjects: string;
@@ -81,6 +90,13 @@ export interface ContentData {
 
 export const content: ContentData = {
   // SAMPLE: replace with real details
+  intro: {
+    hint: "Speak the spell. Click to begin.",
+    skipButton: "Skip Intro",
+    enterButton: "Enter",
+    orbAriaLabel: "Mystic Golden Orb. Click or press Enter to begin.",
+    spellCasting: "Spell unleashed. Welcome to the sanctum of Rowan Vance.",
+  },
   profile: {
     name: "Rowan Vance",
     role: "Senior Full-Stack Engineer & Systems Craftsman",
