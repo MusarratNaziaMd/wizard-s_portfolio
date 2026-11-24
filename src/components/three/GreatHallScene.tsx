@@ -44,17 +44,21 @@ function subscribeWebGL() {
   return () => {};
 }
 
+let cachedWebGLResult: boolean | null = null;
+
 function checkWebGL(): boolean {
   if (typeof window === "undefined") return true;
+  if (cachedWebGLResult !== null) return cachedWebGLResult;
   try {
     const canvas = document.createElement("canvas");
-    return Boolean(
+    cachedWebGLResult = Boolean(
       window.WebGLRenderingContext &&
         (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
     );
   } catch {
-    return false;
+    cachedWebGLResult = false;
   }
+  return cachedWebGLResult;
 }
 
 function getWebGLServerSnapshot(): boolean {
