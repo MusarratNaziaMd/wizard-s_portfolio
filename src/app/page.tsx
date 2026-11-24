@@ -21,7 +21,7 @@ export default function Home() {
         <ScrollProgress />
         <ChapterRail />
         <Navbar />
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col bg-[#080c1a] relative z-20">
           <Hero />
           <SectionDivider />
           <About />
