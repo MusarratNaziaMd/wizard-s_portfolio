@@ -1,6 +1,7 @@
 export * from "./IntroScene";
 export * from "./IntroCanvas";
 export * from "./IntroOverlay";
+export * from "./BookScene";
 export * from "./Book3D";
 export * from "./Wand3D";
 export * from "./IntroSparkles";

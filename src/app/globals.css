@@ -101,6 +101,35 @@ body {
     inset 0 -2px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Wand Intro Animations */
+@keyframes wand-bob {
+  0%, 100% {
+    transform: translateY(0px) rotate(-22deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-20deg);
+  }
+}
+
+.animate-wand-bob {
+  animation: wand-bob 3s ease-in-out infinite;
+}
+
+@keyframes wand-glow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+}
+
+.animate-wand-glow {
+  animation: wand-glow 2.5s ease-in-out infinite;
+}
+
 /* Hero Layer Animations */
 @keyframes lantern-flicker {
   0%, 100% {
@@ -235,6 +264,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-wand-bob,
+  .animate-wand-glow,
   .animate-lantern-flicker,
   .animate-moon-pulse,
   .animate-window-flicker,

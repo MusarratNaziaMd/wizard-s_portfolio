@@ -121,10 +121,10 @@ export interface ContentData {
 export const content: ContentData = {
   // Intro grimoire parameters
   intro: {
-    hint: "Tap the wand to open the book.",
+    hint: "Touch the book with the wand.",
     skipButton: "Skip Intro",
     enterButton: "Enter",
-    wandAriaLabel: "Open the book",
+    wandAriaLabel: "Open the book with the wand",
     monogram: "MN",
     ornament: "✦ ❖ ✦",
     page2Line1: "Software Developer | AI & Full-Stack",
