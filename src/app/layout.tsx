@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Inter, Cormorant_Garamond } from "next/font/google";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { content } from "@/lib/content";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -23,9 +24,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Sanctum | Wizarding Academy Portfolio",
-  description:
-    "An interactive portfolio forged in code, mathematics, and high-performance WebGL.",
+  title: `${content.profile.name} | ${content.profile.role}`,
+  description: content.profile.tagline,
 };
 
 export default function RootLayout({

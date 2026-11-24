@@ -1,66 +1,77 @@
+"use client";
+
 import React from "react";
-
-interface SkillCategory {
-  discipline: string;
-  proficiencies: string[];
-}
-
-const skillSets: SkillCategory[] = [
-  {
-    discipline: "Visual Sorcery & 3D",
-    proficiencies: ["Three.js", "React Three Fiber", "Drei", "GLSL Shaders", "Postprocessing", "GSAP", "Lenis", "Framer Motion"],
-  },
-  {
-    discipline: "Core Architecture",
-    proficiencies: ["Next.js (App Router)", "TypeScript", "React 19", "Tailwind CSS v4", "Node.js", "REST & GraphQL"],
-  },
-  {
-    discipline: "Scholarly Principles",
-    proficiencies: ["Semantic HTML & WCAG", "Responsive Craft", "Reduced Motion Systems", "Bundle Optimization", "Git & CI/CD"],
-  },
-];
+import { content } from "@/lib/content";
+import { MotionReveal } from "@/components/ui/MotionReveal";
 
 export const Skills: React.FC = () => {
+  const { skills } = content;
+
   return (
     <section
       id="skills"
-      aria-label="Skills"
-      className="py-24 px-6 max-w-5xl mx-auto border-t border-gold/15"
+      aria-label="Skills Section"
+      className="py-24 px-6 max-w-6xl mx-auto border-b border-gold/15"
     >
-      <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-        <span className="font-cinzel text-xs uppercase tracking-[0.25em] text-gold">
-          Chapter III
-        </span>
-        <h2 className="font-cinzel text-3xl sm:text-4xl text-parchment font-bold">
-          Disciplines of Mastery
-        </h2>
-        <p className="font-inter text-parchment/75 text-sm sm:text-base">
-          A catalogue of specialized languages, systems, and creative tools wielded across projects.
-        </p>
-      </div>
+      <div className="space-y-16">
+        {/* Section Header */}
+        <div className="max-w-3xl">
+          <MotionReveal>
+            <div className="inline-flex items-center gap-2 mb-3">
+              <span className="font-cinzel text-xs uppercase tracking-[0.25em] text-gold font-semibold">
+                {skills.storyTitle}
+              </span>
+              <span className="text-gold/40" aria-hidden="true">
+                /
+              </span>
+              <span className="font-inter text-xs text-parchment/70">
+                {skills.subtitle}
+              </span>
+            </div>
+            <h2 className="font-cinzel text-3xl sm:text-4xl text-parchment font-bold tracking-tight mb-4">
+              Disciplines of Technical Mastery
+            </h2>
+            <p className="font-cormorant text-xl text-gold/90 italic">
+              {skills.narrative}
+            </p>
+          </MotionReveal>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {skillSets.map((set, idx) => (
-          <div
-            key={idx}
-            className="p-6 rounded-2xl bg-navy/50 border border-gold/20 flex flex-col gap-4"
-          >
-            <h3 className="font-cinzel text-lg text-gold font-semibold tracking-wide">
-              {set.discipline}
-            </h3>
-            <ul className="space-y-2">
-              {set.proficiencies.map((item) => (
-                <li
-                  key={item}
-                  className="font-inter text-sm text-parchment/80 flex items-center gap-2"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold/60" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {/* 3 Skill Group Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {skills.groups.map((group, groupIdx) => (
+            <MotionReveal key={group.category} delay={groupIdx * 0.15}>
+              <div className="h-full flex flex-col justify-between p-7 rounded-2xl bg-navy/70 border border-gold/25 hover:border-gold/50 transition-all duration-300 shadow-lg relative overflow-hidden group">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-gold/15 pb-4">
+                    <h3 className="font-cinzel text-xl text-gold font-bold tracking-wide">
+                      {group.category}
+                    </h3>
+                    <span className="font-cinzel text-xs text-gold/60 uppercase tracking-widest">
+                      Tome 0{groupIdx + 1}
+                    </span>
+                  </div>
+                  <p className="font-inter text-xs sm:text-sm text-parchment/70 leading-relaxed min-h-[40px]">
+                    {group.description}
+                  </p>
+                </div>
+
+                <div className="pt-6">
+                  <ul className="flex flex-wrap gap-2.5" aria-label={`${group.category} skills`}>
+                    {group.items.map((skill) => (
+                      <li
+                        key={skill}
+                        className="font-inter text-xs px-3 py-1.5 rounded-md bg-gold/10 text-parchment/90 border border-gold/30 hover:border-gold hover:text-gold hover:bg-gold/15 transition-colors cursor-default"
+                      >
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </MotionReveal>
+          ))}
+        </div>
       </div>
     </section>
   );

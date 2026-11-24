@@ -1,49 +1,76 @@
+"use client";
+
 import React from "react";
+import { content } from "@/lib/content";
+import { MotionReveal } from "@/components/ui/MotionReveal";
 
 export const About: React.FC = () => {
+  const { about } = content;
+
   return (
     <section
       id="about"
-      aria-label="About"
-      className="py-24 px-6 max-w-5xl mx-auto border-t border-gold/15"
+      aria-label="About Section"
+      className="py-24 px-6 max-w-6xl mx-auto border-b border-gold/15"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-6">
-          <span className="font-cinzel text-xs uppercase tracking-[0.25em] text-gold">
-            Chapter I
-          </span>
-          <h2 className="font-cinzel text-3xl sm:text-4xl text-parchment font-bold">
-            The Scholar&apos;s Journey
-          </h2>
-          <p className="font-inter text-parchment/80 leading-relaxed text-base">
-            Rooted in principles of disciplined engineering and aesthetic harmony,
-            I blend rigorous system architecture with cutting-edge visual craft.
-            Every project is treated as an ancient manuscript: precisely structured,
-            resilient to the ravages of time, and rich in deliberate detail.
-          </p>
-          <p className="font-cormorant text-xl text-gold/90 italic">
-            &ldquo;Code is our incantation; mathematics and design are our runes.&rdquo;
-          </p>
+      <div className="space-y-16">
+        {/* Section Header */}
+        <div className="max-w-3xl">
+          <MotionReveal>
+            <div className="inline-flex items-center gap-2 mb-3">
+              <span className="font-cinzel text-xs uppercase tracking-[0.25em] text-gold font-semibold">
+                {about.storyTitle}
+              </span>
+              <span className="text-gold/40" aria-hidden="true">
+                /
+              </span>
+              <span className="font-inter text-xs text-parchment/70">
+                {about.subtitle}
+              </span>
+            </div>
+            <h2 className="font-cinzel text-3xl sm:text-4xl text-parchment font-bold tracking-tight mb-4">
+              Foundations of Craft
+            </h2>
+            <p className="font-cormorant text-xl text-gold/90 italic">
+              {about.narrative}
+            </p>
+          </MotionReveal>
         </div>
-        <div className="p-8 rounded-2xl bg-navy/60 border border-gold/25 shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl pointer-events-none" />
-          <h3 className="font-cinzel text-lg text-gold mb-4 uppercase tracking-wider">
-            Academy Pillars
-          </h3>
-          <ul className="space-y-4 font-inter text-sm text-parchment/80">
-            <li className="flex items-start gap-3">
-              <span className="text-gold font-bold">✦</span>
-              <span><strong>Performance by Design:</strong> Zero-compromise 60fps rendering, lean bundle footprints, and instant hydration.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-gold font-bold">✦</span>
-              <span><strong>Universal Accessibility:</strong> High-contrast typography, screen reader landmarks, and reduced-motion fallbacks.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-gold font-bold">✦</span>
-              <span><strong>Artful Craft:</strong> Bespoke shaders, tactile motion, and cohesive aesthetic identity.</span>
-            </li>
-          </ul>
+
+        {/* Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          {/* Paragraphs */}
+          <div className="lg:col-span-7 space-y-6">
+            {about.paragraphs.map((p, idx) => (
+              <MotionReveal key={idx} delay={idx * 0.1}>
+                <p className="font-inter text-parchment/85 leading-relaxed text-base sm:text-lg">
+                  {p}
+                </p>
+              </MotionReveal>
+            ))}
+          </div>
+
+          {/* 3 Core Values Cards */}
+          <div className="lg:col-span-5 space-y-4">
+            <h3 className="font-cinzel text-xs uppercase tracking-widest text-gold mb-2">
+              Guiding Engineering Values
+            </h3>
+            {about.values.map((v, idx) => (
+              <MotionReveal key={idx} delay={0.2 + idx * 0.1}>
+                <div className="p-6 rounded-xl bg-navy/80 border border-gold/25 hover:border-gold/50 transition-all duration-300 shadow-md">
+                  <h4 className="font-cinzel text-base text-gold font-semibold mb-2 flex items-center gap-2">
+                    <span className="text-xs text-gold/70" aria-hidden="true">
+                      ✦
+                    </span>
+                    {v.title}
+                  </h4>
+                  <p className="font-inter text-sm text-parchment/75 leading-relaxed">
+                    {v.description}
+                  </p>
+                </div>
+              </MotionReveal>
+            ))}
+          </div>
         </div>
       </div>
     </section>

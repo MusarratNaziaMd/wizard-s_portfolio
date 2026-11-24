@@ -16,9 +16,9 @@
 }
 
 html {
-  scroll-behavior: smooth;
   background-color: #0a0e1a;
   color: #f2e8cf;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -26,6 +26,20 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), sans-serif;
   overflow-x: hidden;
+  /* Subtle CSS-only parchment & celestial grid texture */
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(201, 162, 75, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 100% 50%, rgba(201, 162, 75, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(201, 162, 75, 0.03) 0%, transparent 50%),
+    linear-gradient(to right, rgba(201, 162, 75, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(201, 162, 75, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid #c9a24b;
+  outline-offset: 2px;
 }
 
 /* Custom scrollbar matching academy gold/navy */
@@ -38,10 +52,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c9a24b33;
+  background: rgba(201, 162, 75, 0.25);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #c9a24b88;
+  background: rgba(201, 162, 75, 0.6);
 }
