@@ -1,3 +1,3 @@
 export * from "./HeroScene";
-export * from "./HeroOverlayCanvas";
 export * from "./HeroText";
+export * from "./HeroMagicCanvas";

@@ -129,18 +129,81 @@ body {
   animation: lantern-flicker 3.5s ease-in-out infinite;
 }
 
-@keyframes owl-breathe {
+@keyframes moon-pulse {
   0%, 100% {
-    transform: scale(1);
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.97);
   }
   50% {
-    transform: scale(1.012);
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.04);
   }
 }
 
-.animate-owl-breathe {
-  animation: owl-breathe 4.5s ease-in-out infinite;
-  transform-origin: bottom center;
+.animate-moon-pulse {
+  animation: moon-pulse 6s ease-in-out infinite;
+}
+
+@keyframes window-flicker {
+  0%, 100% {
+    opacity: 0.65;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  25% {
+    opacity: 0.42;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  60% {
+    opacity: 0.88;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  80% {
+    opacity: 0.52;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+.animate-window-flicker {
+  animation: window-flicker 3.5s ease-in-out infinite;
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 3px #cfd8ff);
+  }
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 3.8s ease-in-out infinite;
+}
+
+@keyframes shooting-star {
+  0%, 82% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-30deg) scaleX(0);
+  }
+  84% {
+    opacity: 0.95;
+    transform: translate3d(40px, 24px, 0) rotate(-30deg) scaleX(1);
+  }
+  87% {
+    opacity: 0;
+    transform: translate3d(240px, 140px, 0) rotate(-30deg) scaleX(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(240px, 140px, 0) rotate(-30deg) scaleX(0);
+  }
+}
+
+.animate-shooting-star {
+  animation: shooting-star 18s ease-in-out infinite;
 }
 
 @keyframes fog-drift-left {
@@ -162,18 +225,21 @@ body {
 }
 
 .animate-fog-left {
-  animation: fog-drift-left 75s linear infinite;
+  animation: fog-drift-left 120s linear infinite;
   will-change: transform;
 }
 
 .animate-fog-right {
-  animation: fog-drift-right 90s linear infinite;
+  animation: fog-drift-right 140s linear infinite;
   will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-lantern-flicker,
-  .animate-owl-breathe,
+  .animate-moon-pulse,
+  .animate-window-flicker,
+  .animate-star-twinkle,
+  .animate-shooting-star,
   .animate-fog-left,
   .animate-fog-right {
     animation: none !important;

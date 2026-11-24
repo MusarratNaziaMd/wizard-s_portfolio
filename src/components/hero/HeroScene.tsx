@@ -2,95 +2,50 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { HeroText } from "./HeroText";
-import type { HeroOverlayCanvasProps } from "./HeroOverlayCanvas";
+import { HeroMagicCanvas } from "./HeroMagicCanvas";
 
-const DynamicHeroOverlayCanvas = dynamic<HeroOverlayCanvasProps>(
-  () => import("./HeroOverlayCanvas").then((mod) => mod.HeroOverlayCanvas),
-  { ssr: false }
-);
+// Fixed positions of castle illuminated windows (in % relative to castle container)
+const CASTLE_WINDOWS = [
+  { x: "50.4%", y: "44.8%", size: 14, delay: "0s", duration: "3.2s" }, // Grand central hall
+  { x: "50.3%", y: "48.3%", size: 12, delay: "0.8s", duration: "4.1s" }, // Lower arched window
+  { x: "49.8%", y: "23.9%", size: 11, delay: "1.7s", duration: "2.8s" }, // High tower observatory
+  { x: "49.5%", y: "60.7%", size: 13, delay: "2.4s", duration: "3.6s" }, // Terrace arch
+  { x: "60.4%", y: "50.9%", size: 11, delay: "0.5s", duration: "3.9s" }, // East turret
+  { x: "47.6%", y: "48.9%", size: 10, delay: "1.2s", duration: "4.5s" }, // West wing portal
+  { x: "52.5%", y: "48.8%", size: 10, delay: "2.1s", duration: "3.3s" }, // East wing portal
+  { x: "50.9%", y: "60.5%", size: 12, delay: "1.5s", duration: "3.7s" }, // Water gate
+];
+
+// Twinkling star points across upper dark sky
+const TWINKLING_STARS = [
+  { top: "8%", left: "12%", size: 2.2, delay: "0s", dur: "3.4s" },
+  { top: "14%", left: "28%", size: 1.8, delay: "1.2s", dur: "4.1s" },
+  { top: "6%", left: "42%", size: 2.5, delay: "2.4s", dur: "3.8s" },
+  { top: "18%", left: "55%", size: 1.6, delay: "0.5s", dur: "4.6s" },
+  { top: "11%", left: "68%", size: 2.0, delay: "1.8s", dur: "3.2s" },
+  { top: "22%", left: "84%", size: 2.4, delay: "3.1s", dur: "4.0s" },
+  { top: "28%", left: "92%", size: 1.5, delay: "0.9s", dur: "3.6s" },
+  { top: "32%", left: "18%", size: 1.9, delay: "2.1s", dur: "4.4s" },
+  { top: "26%", left: "36%", size: 2.2, delay: "1.4s", dur: "3.5s" },
+  { top: "38%", left: "48%", size: 1.7, delay: "2.8s", dur: "4.2s" },
+  { top: "16%", left: "8%", size: 2.0, delay: "0.3s", dur: "3.9s" },
+  { top: "42%", left: "25%", size: 1.5, delay: "1.9s", dur: "4.5s" },
+  { top: "35%", left: "62%", size: 2.3, delay: "3.5s", dur: "3.7s" },
+  { top: "12%", left: "88%", size: 1.8, delay: "0.7s", dur: "4.1s" },
+  { top: "5%", left: "95%", size: 2.1, delay: "2.2s", dur: "3.3s" },
+  { top: "48%", left: "38%", size: 1.6, delay: "1.1s", dur: "4.7s" },
+];
 
 export const HeroScene: React.FC = () => {
   const containerRef = useRef<HTMLElement>(null);
-  const skyRef = useRef<HTMLDivElement>(null);
-  const castleRef = useRef<HTMLDivElement>(null);
-  const fogRef = useRef<HTMLDivElement>(null);
-  const owlRef = useRef<HTMLDivElement>(null);
-  const shelfRef = useRef<HTMLDivElement>(null);
-
   const { isMobile } = useWindowSize();
   const prefersReduced = useReducedMotion();
   const [isVisible, setIsVisible] = useState<boolean>(true);
 
-  // Smooth mouse parallax animation loop
-  useEffect(() => {
-    if (prefersReduced) return;
-
-    let targetX = 0;
-    let targetY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let animationFrameId: number;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // Normalized coordinates: -1 to 1
-      targetX = (e.clientX / window.innerWidth - 0.5) * 2;
-      targetY = (e.clientY / window.innerHeight - 0.5) * 2;
-    };
-
-    const handleMouseLeave = () => {
-      targetX = 0;
-      targetY = 0;
-    };
-
-    const animateParallax = () => {
-      currentX += (targetX - currentX) * 0.08;
-      currentY += (targetY - currentY) * 0.08;
-
-      // Parallax strengths:
-      // Sky: 2% (~20px X, 12px Y)
-      if (skyRef.current) {
-        skyRef.current.style.transform = `scaleX(-1) translate3d(${currentX * -20}px, ${currentY * 12}px, 0)`;
-      }
-
-      // Castle: 4% (~40px X, 24px Y)
-      if (castleRef.current) {
-        castleRef.current.style.transform = `translate3d(${currentX * 40}px, ${currentY * 24}px, 0)`;
-      }
-
-      // Fog: 6% (~60px X, 30px Y)
-      if (fogRef.current) {
-        fogRef.current.style.transform = `translate3d(${currentX * 60}px, ${currentY * 30}px, 0)`;
-      }
-
-      // Owl: 10% (~100px X, 45px Y)
-      if (owlRef.current) {
-        owlRef.current.style.transform = `translate3d(${currentX * 100}px, ${currentY * 45}px, 0)`;
-      }
-
-      // Shelf: 10% in the opposite direction (-100px X, -45px Y)
-      if (shelfRef.current) {
-        shelfRef.current.style.transform = `translate3d(${-currentX * 100}px, ${-currentY * 45}px, 0)`;
-      }
-
-      animationFrameId = requestAnimationFrame(animateParallax);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    window.addEventListener("mouseleave", handleMouseLeave);
-    animationFrameId = requestAnimationFrame(animateParallax);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseleave", handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [prefersReduced]);
-
-  // Performance: Pause Canvas rendering when Hero is off-screen
+  // Performance: Pause animations when Hero is off-screen or tab is hidden
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsVisible(document.visibilityState === "visible");
@@ -119,40 +74,95 @@ export const HeroScene: React.FC = () => {
       id="hero"
       ref={containerRef}
       aria-label="Hero Section"
-      className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#070a14] border-b border-gold/15"
+      className="relative w-full min-h-screen flex flex-col justify-end md:justify-center overflow-hidden bg-[#070a14] border-b border-gold/15 cursor-default select-none"
     >
       {/* ============================================================ */}
-      {/* LAYER 1: SKY-MOON (Full hero, scaleX(-1) so moon sits right)   */}
+      {/* LAYER 1: SKY-MOON (Completely STILL, scaleX(-1) for moon)     */}
       {/* ============================================================ */}
       <div
-        ref={skyRef}
-        className="absolute inset-0 w-full h-full pointer-events-none select-none will-change-transform"
+        className="absolute inset-0 w-full h-full pointer-events-none select-none"
         style={{ transform: "scaleX(-1)" }}
         aria-hidden="true"
       >
         <Image
           src="/textures/hero/sky-moon.webp"
-          alt="Moonlit cloudy fantasy sky"
+          alt="Moonlit fantasy night sky with clouds"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center scale-105"
+          className="object-cover object-center"
         />
 
-        {/* Subtle nocturnal blue tint overlay to unify color harmony */}
-        <div className="absolute inset-0 bg-[#0a0e1a]/25 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-transparent to-midnight/40" />
+        {/* Subtle nocturnal blue tint overlay */}
+        <div className="absolute inset-0 bg-[#0a0e1a]/20 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070a14]/90 via-transparent to-[#0b1030]/35" />
 
         {/* Deep edge vignette */}
-        <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(7,10,20,0.85)]" />
+        <div className="absolute inset-0 shadow-[inset_0_0_140px_rgba(7,10,20,0.85)]" />
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 2: CASTLE (Right-center, water reflection at base)     */}
+      {/* MAGIC EFFECT D: MOON GLOW (Soft pulsing radial aura)          */}
+      {/* Positioned at Moon center: x = 75.2%, y = 25.1%              */}
       {/* ============================================================ */}
       <div
-        ref={castleRef}
-        className="absolute bottom-0 pointer-events-none select-none will-change-transform z-10 w-[95vw] left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-[4%] lg:right-[8%] md:w-[55vw] max-w-[1250px] aspect-[2000/1187]"
+        className="absolute rounded-full pointer-events-none blur-3xl animate-moon-pulse -z-10"
+        style={{
+          left: "75.2%",
+          top: "25.1%",
+          width: "min(480px, 45vw)",
+          height: "min(480px, 45vw)",
+          background:
+            "radial-gradient(circle, rgba(207, 216, 255, 0.45) 0%, rgba(201, 162, 75, 0.2) 40%, rgba(11, 16, 48, 0.05) 70%, transparent 80%)",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ============================================================ */}
+      {/* MAGIC EFFECT C: TWINKLING STARS (Fixed in place, CSS pulse)  */}
+      {/* ============================================================ */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
+        {TWINKLING_STARS.map((star, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-[#f2e8cf] animate-star-twinkle"
+            style={{
+              top: star.top,
+              left: star.left,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              animationDelay: star.delay,
+              animationDuration: star.dur,
+              boxShadow: "0 0 4px rgba(207, 216, 255, 0.9)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ============================================================ */}
+      {/* MAGIC EFFECT F: SHOOTING STAR (Periodic streak every ~18s)   */}
+      {/* ============================================================ */}
+      <div
+        className="absolute top-[14%] right-[26%] pointer-events-none z-12 overflow-visible"
+        aria-hidden="true"
+      >
+        <div
+          className="w-32 h-[1.5px] rounded-full animate-shooting-star"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, rgba(201, 162, 75, 0.8) 60%, rgba(255, 250, 220, 1) 100%)",
+            boxShadow: "0 0 6px rgba(255, 235, 175, 0.8)",
+          }}
+        />
+      </div>
+
+      {/* ============================================================ */}
+      {/* LAYER 2: CASTLE (Completely STILL, clearly visible)          */}
+      {/* Mobile: Sits in upper-middle so towers are visible above text*/}
+      {/* Desktop: Sits right-center, bottom aligned                   */}
+      {/* ============================================================ */}
+      <div
+        className="absolute top-[15vh] md:top-auto md:bottom-0 pointer-events-none select-none z-14 w-[92vw] left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-[4%] lg:right-[8%] md:w-[55vw] max-w-[1250px] aspect-[2000/1187]"
         aria-hidden="true"
       >
         <Image
@@ -161,20 +171,40 @@ export const HeroScene: React.FC = () => {
           fill
           priority
           sizes="(max-width: 768px) 95vw, 55vw"
-          className="object-contain object-bottom"
+          className="object-contain object-bottom drop-shadow-[0_0_35px_rgba(207,216,255,0.12)]"
         />
+
+        {/* ============================================================ */}
+        {/* MAGIC EFFECT E: CASTLE LIT WINDOW GLOWS (Soft CSS flickers)   */}
+        {/* ============================================================ */}
+        {CASTLE_WINDOWS.map((win, idx) => (
+          <div
+            key={idx}
+            className="absolute rounded-full blur-[2px] animate-window-flicker pointer-events-none"
+            style={{
+              left: win.x,
+              top: win.y,
+              width: `${win.size}px`,
+              height: `${win.size}px`,
+              animationDelay: win.delay,
+              animationDuration: win.duration,
+              background:
+                "radial-gradient(circle, rgba(255, 215, 120, 0.95) 0%, rgba(255, 179, 71, 0.5) 50%, transparent 80%)",
+              boxShadow: "0 0 8px rgba(255, 179, 71, 0.7)",
+            }}
+          />
+        ))}
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 3: FOG (Drifting blue mist, mix-blend-mode: screen)    */}
+      {/* LAYER 3: FOG (Slow 120s drift, low opacity, vertical mask)   */}
       {/* ============================================================ */}
       <div
-        ref={fogRef}
-        className="absolute inset-x-0 bottom-0 pointer-events-none select-none will-change-transform z-15 [mask-image:linear-gradient(to_top,black_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_30%,transparent_100%)]"
+        className="absolute inset-x-0 bottom-0 pointer-events-none select-none z-15 [mask-image:linear-gradient(to_top,black_25%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_25%,transparent_100%)]"
         aria-hidden="true"
       >
-        {/* Lower dense fog: drifts left, opacity 0.7 */}
-        <div className="relative w-full h-44 sm:h-60 md:h-80 overflow-hidden mix-blend-screen opacity-70">
+        {/* Lower mist: slow 120s loop, low opacity 0.35 */}
+        <div className="relative w-full h-44 sm:h-56 md:h-72 overflow-hidden mix-blend-screen opacity-35">
           <div className="flex w-[200%] h-full animate-fog-left">
             <div className="relative w-1/2 h-full">
               <Image
@@ -197,8 +227,8 @@ export const HeroScene: React.FC = () => {
           </div>
         </div>
 
-        {/* Higher lighter fog: sits higher, drifts right, lower opacity 0.4 */}
-        <div className="absolute bottom-16 sm:bottom-28 md:bottom-36 inset-x-0 h-36 sm:h-52 md:h-68 overflow-hidden mix-blend-screen opacity-40">
+        {/* Upper mist: slow 140s loop, very low opacity 0.2 */}
+        <div className="absolute bottom-14 sm:bottom-24 md:bottom-32 inset-x-0 h-32 sm:h-48 md:h-60 overflow-hidden mix-blend-screen opacity-20">
           <div className="flex w-[200%] h-full animate-fog-right">
             <div className="relative w-1/2 h-full">
               <Image
@@ -223,14 +253,13 @@ export const HeroScene: React.FC = () => {
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 4: OWL ON BOOKS (Right edge, overlaps castle right)    */}
+      {/* LAYER 4: OWL ON BOOKS (Completely STILL, right edge)         */}
       {/* ============================================================ */}
       <div
-        ref={owlRef}
-        className="absolute bottom-0 right-0 pointer-events-none select-none will-change-transform z-20 w-[35vw] md:w-[24vw] min-w-[180px] max-w-[420px] aspect-[900/1200]"
+        className="absolute bottom-0 right-0 pointer-events-none select-none z-18 w-[35vw] md:w-[24vw] min-w-[180px] max-w-[420px] aspect-[900/1200]"
         aria-hidden="true"
       >
-        <div className="relative w-full h-full animate-owl-breathe">
+        <div className="relative w-full h-full">
           <Image
             src="/textures/hero/owl-books.webp"
             alt="Scholarly owl perched atop ancient grimoires"
@@ -242,24 +271,23 @@ export const HeroScene: React.FC = () => {
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 5: SHELF-LEFT & LANTERN GLOW (Desktop only, flush left) */}
+      {/* LAYER 5: SHELF-LEFT & LANTERN (Desktop only, completely STILL) */}
       {/* ============================================================ */}
       <div
-        ref={shelfRef}
-        className="absolute bottom-0 left-0 pointer-events-none select-none will-change-transform z-20 hidden md:block w-[22vw] min-w-[280px] max-w-[440px] aspect-[900/1402]"
+        className="absolute bottom-0 left-0 pointer-events-none select-none z-18 hidden md:block w-[22vw] min-w-[280px] max-w-[440px] aspect-[900/1402]"
         aria-hidden="true"
       >
-        {/* Warm amber radial glow situated directly behind the lantern (center at 49% left, 51% top) */}
+        {/* Warm amber radial glow behind lantern flame */}
         <div
           className="absolute rounded-full blur-2xl animate-lantern-flicker pointer-events-none -z-10"
           style={{
             left: "49%",
             top: "51%",
-            width: "220px",
-            height: "220px",
+            width: "200px",
+            height: "200px",
             transform: "translate(-50%, -50%)",
             background:
-              "radial-gradient(circle, rgba(255, 179, 71, 0.9) 0%, rgba(201, 162, 75, 0.5) 45%, rgba(11, 16, 48, 0) 70%)",
+              "radial-gradient(circle, rgba(255, 179, 71, 0.85) 0%, rgba(201, 162, 75, 0.45) 45%, transparent 70%)",
           }}
         />
 
@@ -275,41 +303,62 @@ export const HeroScene: React.FC = () => {
 
           {/* Foreground subtle luminous flare right at lantern core */}
           <div
-            className="absolute rounded-full blur-md animate-lantern-flicker pointer-events-none mix-blend-screen"
+            className="absolute rounded-full blur-sm animate-lantern-flicker pointer-events-none mix-blend-screen"
             style={{
               left: "49%",
               top: "51%",
-              width: "70px",
-              height: "70px",
+              width: "60px",
+              height: "60px",
               transform: "translate(-50%, -50%)",
               background:
-                "radial-gradient(circle, rgba(255, 230, 180, 0.8) 0%, rgba(255, 179, 71, 0.4) 60%, transparent 80%)",
+                "radial-gradient(circle, rgba(255, 235, 190, 0.8) 0%, rgba(255, 179, 71, 0.4) 60%, transparent 80%)",
             }}
           />
         </div>
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 6: 3D R3F FLOATING CANDLES & STARDUST OVERLAY          */}
+      {/* ATMOSPHERIC GRADIENT: Soft left-to-right gradient only       */}
+      {/* Navy 85% at far left fading to transparent by 55% width.     */}
+      {/* On mobile: bottom-to-top gradient so towers stay visible.    */}
       {/* ============================================================ */}
-      <div className="absolute inset-0 pointer-events-none z-25 overflow-hidden" aria-hidden="true">
-        <DynamicHeroOverlayCanvas
-          isMobile={isMobile}
-          reducedMotion={prefersReduced}
-          isVisible={isVisible}
-        />
-      </div>
+      <div
+        className="absolute inset-0 pointer-events-none z-20 hidden md:block"
+        style={{
+          background:
+            "linear-gradient(to right, rgba(10, 14, 26, 0.85) 0%, rgba(10, 14, 26, 0.65) 25%, rgba(10, 14, 26, 0.25) 42%, rgba(10, 14, 26, 0.05) 50%, transparent 55%)",
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 pointer-events-none z-20 block md:hidden"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(10, 14, 26, 0.95) 0%, rgba(10, 14, 26, 0.8) 42%, rgba(10, 14, 26, 0.2) 65%, transparent 80%)",
+        }}
+        aria-hidden="true"
+      />
 
       {/* ============================================================ */}
-      {/* LAYER 7: ACCESSIBLE HTML TEXT CONTENT (Left-center)          */}
+      {/* MAGIC EFFECTS OVERLAY: Dust motes, Fireflies, Wand & Clicks   */}
       {/* ============================================================ */}
-      <div className="relative z-30 w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 py-24 sm:py-32 flex items-center">
+      <HeroMagicCanvas
+        isMobile={isMobile}
+        reducedMotion={prefersReduced}
+        isVisible={isVisible}
+      />
+
+      {/* ============================================================ */}
+      {/* HTML TEXT: Left side, DIRECTLY on artwork, NO BOX            */}
+      {/* Mobile: In lower half; castle towers visible above it.       */}
+      {/* ============================================================ */}
+      <div className="relative z-30 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-32 pb-14 sm:pb-16 md:py-28 flex items-end md:items-center">
         <HeroText />
       </div>
 
-      {/* Atmospheric bottom blend into the next section */}
+      {/* Subtle blend into the next section */}
       <div
-        className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-navy to-transparent pointer-events-none z-30"
+        className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-navy to-transparent pointer-events-none z-30"
         aria-hidden="true"
       />
     </section>
