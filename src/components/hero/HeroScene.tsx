@@ -253,10 +253,10 @@ export const HeroScene: React.FC = () => {
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 4: OWL ON BOOKS (Completely STILL, right edge)         */}
+      {/* LAYER 4: OWL ON BOOKS (Shifted left and up, fully visible)   */}
       {/* ============================================================ */}
       <div
-        className="absolute bottom-0 right-0 pointer-events-none select-none z-18 w-[35vw] md:w-[24vw] min-w-[180px] max-w-[420px] aspect-[900/1200]"
+        className="absolute bottom-2 sm:bottom-4 md:bottom-6 right-3 sm:right-6 md:right-10 pointer-events-none select-none z-18 w-[34vw] md:w-[22vw] min-w-[180px] max-w-[390px] aspect-[900/1200]"
         aria-hidden="true"
       >
         <div className="relative w-full h-full">
@@ -264,35 +264,38 @@ export const HeroScene: React.FC = () => {
             src="/textures/hero/owl-books.webp"
             alt="Scholarly owl perched atop ancient grimoires"
             fill
-            sizes="(max-width: 768px) 35vw, 24vw"
+            sizes="(max-width: 768px) 34vw, 22vw"
             className="object-contain object-right-bottom drop-shadow-[0_10px_25px_rgba(0,0,0,0.85)]"
           />
         </div>
       </div>
 
       {/* ============================================================ */}
-      {/* LAYER 5: SHELF-LEFT & LANTERN (Desktop only, completely STILL) */}
+      {/* LAYER 5: SHELF-LEFT & LANTERN (Brighter warm lift, STILL)    */}
       {/* ============================================================ */}
       <div
         className="absolute bottom-0 left-0 pointer-events-none select-none z-18 hidden md:block w-[22vw] min-w-[280px] max-w-[440px] aspect-[900/1402]"
         aria-hidden="true"
       >
-        {/* Warm amber radial glow behind lantern flame */}
+        {/* Warm amber radial glow behind lantern flame (stronger 0.6 - 0.95 flicker) */}
         <div
           className="absolute rounded-full blur-2xl animate-lantern-flicker pointer-events-none -z-10"
           style={{
             left: "49%",
             top: "51%",
-            width: "200px",
-            height: "200px",
+            width: "240px",
+            height: "240px",
             transform: "translate(-50%, -50%)",
             background:
-              "radial-gradient(circle, rgba(255, 179, 71, 0.85) 0%, rgba(201, 162, 75, 0.45) 45%, transparent 70%)",
+              "radial-gradient(circle, rgba(255, 179, 71, 0.95) 0%, rgba(201, 162, 75, 0.55) 45%, transparent 75%)",
           }}
         />
 
-        {/* Shelf imagery */}
-        <div className="relative w-full h-full">
+        {/* Shelf imagery with brightened warm lift */}
+        <div
+          className="relative w-full h-full"
+          style={{ filter: "brightness(1.15) contrast(1.04)" }}
+        >
           <Image
             src="/textures/hero/shelf-left.webp"
             alt="Academy library shelf with lantern and codices"
@@ -301,17 +304,17 @@ export const HeroScene: React.FC = () => {
             className="object-contain object-left-bottom drop-shadow-[4px_0_30px_rgba(0,0,0,0.8)]"
           />
 
-          {/* Foreground subtle luminous flare right at lantern core */}
+          {/* Foreground luminous flare right at lantern core */}
           <div
             className="absolute rounded-full blur-sm animate-lantern-flicker pointer-events-none mix-blend-screen"
             style={{
               left: "49%",
               top: "51%",
-              width: "60px",
-              height: "60px",
+              width: "70px",
+              height: "70px",
               transform: "translate(-50%, -50%)",
               background:
-                "radial-gradient(circle, rgba(255, 235, 190, 0.8) 0%, rgba(255, 179, 71, 0.4) 60%, transparent 80%)",
+                "radial-gradient(circle, rgba(255, 240, 205, 0.9) 0%, rgba(255, 179, 71, 0.5) 60%, transparent 80%)",
             }}
           />
         </div>
