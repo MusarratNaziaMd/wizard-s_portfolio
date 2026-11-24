@@ -100,3 +100,82 @@ body {
     inset 0 1px 2px rgba(255, 255, 255, 0.25),
     inset 0 -2px 4px rgba(0, 0, 0, 0.4);
 }
+
+/* Hero Layer Animations */
+@keyframes lantern-flicker {
+  0%, 100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  20% {
+    opacity: 0.52;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  45% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  70% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  85% {
+    opacity: 0.72;
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+}
+
+.animate-lantern-flicker {
+  animation: lantern-flicker 3.5s ease-in-out infinite;
+}
+
+@keyframes owl-breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.012);
+  }
+}
+
+.animate-owl-breathe {
+  animation: owl-breathe 4.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes fog-drift-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes fog-drift-right {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fog-left {
+  animation: fog-drift-left 75s linear infinite;
+  will-change: transform;
+}
+
+.animate-fog-right {
+  animation: fog-drift-right 90s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-lantern-flicker,
+  .animate-owl-breathe,
+  .animate-fog-left,
+  .animate-fog-right {
+    animation: none !important;
+  }
+}

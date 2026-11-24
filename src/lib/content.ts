@@ -70,6 +70,10 @@ export interface ContentData {
   hero: SectionMeta & {
     ctaProjects: string;
     ctaContact: string;
+    greeting: string;
+    ctaExplore: string;
+    ctaResume: string;
+    skillChips: string[];
   };
   about: AboutContent;
   skills: SectionMeta & {
@@ -113,6 +117,17 @@ export const content: ContentData = {
     narrative: "Every enduring construct begins with a deliberate synthesis of structure, logic, and aesthetic discipline.",
     ctaProjects: "Explore The Quests",
     ctaContact: "Dispatch a Message",
+    greeting: "Hello, I'm",
+    ctaExplore: "Explore My Work",
+    ctaResume: "Download Resume",
+    skillChips: [
+      "TypeScript",
+      "React / Next.js",
+      "Three.js / WebGL",
+      "Node.js",
+      "System Architecture",
+      "Tailwind CSS",
+    ],
   },
 
   about: {

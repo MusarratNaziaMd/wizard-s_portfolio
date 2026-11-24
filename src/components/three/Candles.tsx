@@ -97,14 +97,16 @@ export const Candles: React.FC<CandlesProps> = ({
             key={candle.id}
             position={[candle.baseX, candle.baseY, candle.baseZ]}
           >
-            {/* Wax Candle Body */}
+            {/* Wax Candle Body: warm ivory with subtle gilded translucent glow */}
             <mesh position={[0, -candle.height / 2, 0]}>
               <cylinderGeometry
                 args={[candle.radius, candle.radius * 1.05, candle.height, 12]}
               />
               <meshStandardMaterial
-                color="#f2e8cf"
-                roughness={0.6}
+                color="#f8f1de"
+                emissive="#c9a24b"
+                emissiveIntensity={0.28}
+                roughness={0.4}
                 metalness={0.05}
               />
             </mesh>
