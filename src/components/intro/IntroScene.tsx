@@ -9,25 +9,40 @@ const DynamicIntroCanvas = dynamic<IntroCanvasProps>(
   {
     ssr: false,
     loading: () => (
-      <div className="fixed inset-0 w-screen h-screen bg-navy flex items-center justify-center">
-        <div className="w-6 h-6 rounded-full bg-gold/50 blur-sm animate-pulse" />
+      <div className="fixed inset-0 w-screen h-screen bg-[#070a14] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-gold/40 blur-md animate-pulse" />
       </div>
     ),
   }
 );
 
 export interface IntroSceneProps {
-  isHovered: boolean;
-  isBloomed: boolean;
+  isWandHovered: boolean;
+  isBookOpen: boolean;
+  isPageTurned: boolean;
+  onWandHoverChange: (hovered: boolean) => void;
+  onWandTap: () => void;
+  monogram?: string;
 }
 
 export const IntroScene: React.FC<IntroSceneProps> = ({
-  isHovered,
-  isBloomed,
+  isWandHovered,
+  isBookOpen,
+  isPageTurned,
+  onWandHoverChange,
+  onWandTap,
+  monogram,
 }) => {
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-navy z-0 pointer-events-none">
-      <DynamicIntroCanvas isHovered={isHovered} isBloomed={isBloomed} />
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#070a14] z-0">
+      <DynamicIntroCanvas
+        isWandHovered={isWandHovered}
+        isBookOpen={isBookOpen}
+        isPageTurned={isPageTurned}
+        onWandHoverChange={onWandHoverChange}
+        onWandTap={onWandTap}
+        monogram={monogram}
+      />
     </div>
   );
 };

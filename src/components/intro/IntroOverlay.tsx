@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { content } from "@/lib/content";
 import { useIntroSkip } from "@/hooks/useIntroSkip";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { IntroScene } from "./IntroScene";
-import { NameReveal } from "./NameReveal";
+import { GrimoirePages } from "./GrimoirePages";
 
 export interface IntroOverlayProps {
   onComplete?: () => void;
@@ -15,23 +15,33 @@ export interface IntroOverlayProps {
 export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
   const { hasSkipped, skipIntro, markCompleted, isReady } = useIntroSkip();
   const prefersReduced = useReducedMotion();
+  const { intro } = content;
 
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [isBloomed, setIsBloomed] = useState<boolean>(false);
+  const [isWandHovered, setIsWandHovered] = useState<boolean>(false);
+  const [isBookOpen, setIsBookOpen] = useState<boolean>(false);
+  const [isPageTurned, setIsPageTurned] = useState<boolean>(false);
   const [showHint, setShowHint] = useState<boolean>(false);
   const [isExiting, setIsExiting] = useState<boolean>(false);
 
-  // 1. After 1.5s, fade in hint text
+  // When prefers-reduced-motion is active, immediately open book and show name & enter button
   useEffect(() => {
-    if (prefersReduced) return;
+    if (prefersReduced) {
+      setIsBookOpen(true);
+      setIsPageTurned(true);
+    }
+  }, [prefersReduced]);
+
+  // 1. After 1.5s, fade in hint text "Tap the wand to open the book."
+  useEffect(() => {
+    if (prefersReduced || isBookOpen) return;
     const hintTimer = setTimeout(() => {
       setShowHint(true);
     }, 1500);
 
     return () => clearTimeout(hintTimer);
-  }, [prefersReduced]);
+  }, [prefersReduced, isBookOpen]);
 
-  // Lock body scroll while intro is active
+  // Lock body scroll while intro is active; unlock when finished
   useEffect(() => {
     if (!hasSkipped && !isExiting) {
       document.body.style.overflow = "hidden";
@@ -44,26 +54,35 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
     };
   }, [hasSkipped, isExiting]);
 
-  const triggerSpell = () => {
-    if (isBloomed || prefersReduced) return;
-    setIsBloomed(true);
-  };
+  // Wand Tap Handler (Click / Space / Enter)
+  const handleWandTap = useCallback(() => {
+    if (isBookOpen) return;
+    setIsBookOpen(true);
+    setShowHint(false);
 
-  const handleEnterSanctum = () => {
+    // After 2.5s on Spread 1 (name reveal), flip page to Spread 2 (skills & enter)
+    setTimeout(() => {
+      setIsPageTurned(true);
+    }, 2800);
+  }, [isBookOpen]);
+
+  // Enter button handler: closes book with expanding light, fading into portfolio
+  const handleEnterSanctum = useCallback(() => {
+    markCompleted();
     setIsExiting(true);
     setTimeout(() => {
-      markCompleted();
       if (onComplete) onComplete();
     }, 600);
-  };
+  }, [markCompleted, onComplete]);
 
-  const handleSkip = () => {
+  // Skip Intro button handler
+  const handleSkip = useCallback(() => {
+    skipIntro();
     setIsExiting(true);
     setTimeout(() => {
-      skipIntro();
       if (onComplete) onComplete();
     }, 300);
-  };
+  }, [skipIntro, onComplete]);
 
   if (!isReady || hasSkipped) {
     return null;
@@ -77,54 +96,61 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="fixed inset-0 w-screen h-screen z-50 flex flex-col items-center justify-center bg-navy select-none"
+          className="fixed inset-0 w-screen h-screen z-50 flex flex-col items-center justify-center bg-[#070a14] select-none"
           role="dialog"
           aria-modal="true"
-          aria-label="Sanctum Intro Experience"
+          aria-label="Grimoire Intro Experience"
         >
           {/* Skip Intro button positioned top-right with styling */}
           <div className="absolute top-6 right-6 z-40">
             <button
               type="button"
               onClick={handleSkip}
-              className="font-cinzel text-xs uppercase tracking-widest text-parchment/80 hover:text-gold border border-gold/30 hover:border-gold bg-navy/80 px-4 py-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer shadow-md"
+              className="font-cinzel text-xs uppercase tracking-widest text-parchment/80 hover:text-gold border border-gold/30 hover:border-gold bg-[#0b1028]/80 px-4 py-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer shadow-md"
             >
-              {content.intro.skipButton}
+              {intro.skipButton}
             </button>
           </div>
 
-          {/* 3D Visual Scene */}
-          {!prefersReduced && (
-            <IntroScene isHovered={isHovered} isBloomed={isBloomed} />
-          )}
+          {/* 3D Grimoire & Wand Scene */}
+          <IntroScene
+            isWandHovered={isWandHovered}
+            isBookOpen={isBookOpen}
+            isPageTurned={isPageTurned}
+            onWandHoverChange={setIsWandHovered}
+            onWandTap={handleWandTap}
+            monogram={intro.monogram}
+          />
 
-          {/* Interactive Accessible Orb Button */}
-          {!isBloomed && !prefersReduced && (
-            <div className="relative z-20 flex flex-col items-center justify-center">
+          {/* Accessible Wand Button (Keyboard & Screen reader focusable proxy) */}
+          {!isBookOpen && !prefersReduced && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
               <button
                 type="button"
-                onClick={triggerSpell}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                onFocus={() => setIsHovered(true)}
-                onBlur={() => setIsHovered(false)}
-                aria-label={content.intro.orbAriaLabel}
-                className="w-24 h-24 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/80"
+                onClick={handleWandTap}
+                onMouseEnter={() => setIsWandHovered(true)}
+                onMouseLeave={() => setIsWandHovered(false)}
+                onFocus={() => setIsWandHovered(true)}
+                onBlur={() => setIsWandHovered(false)}
+                aria-label={intro.wandAriaLabel}
+                className="w-48 h-48 rounded-full pointer-events-auto cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/70"
+                style={{ transform: "translateY(-60px)" }}
               >
-                <span className="sr-only">{content.intro.orbAriaLabel}</span>
+                <span className="sr-only">{intro.wandAriaLabel}</span>
               </button>
 
               {/* Hint text fading in after 1.5s */}
-              <div className="absolute -bottom-16 w-80 text-center pointer-events-none min-h-[28px]">
+              <div className="absolute bottom-12 sm:bottom-16 w-80 text-center pointer-events-none min-h-[32px]">
                 <AnimatePresence>
                   {showHint && (
                     <motion.p
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="font-cormorant text-lg sm:text-xl text-parchment/80 italic tracking-wider drop-shadow-md"
+                      className="font-cormorant text-xl sm:text-2xl text-parchment/90 italic tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
                     >
-                      {content.intro.hint}
+                      {intro.hint}
                     </motion.p>
                   )}
                 </AnimatePresence>
@@ -132,19 +158,22 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
             </div>
           )}
 
-          {/* Name Reveal & Role Presentation */}
-          {(isBloomed || prefersReduced) && (
-            <NameReveal
-              isTriggered={isBloomed || prefersReduced}
+          {/* Grimoire Open Pages (Inscribed Name, Role, & Skills) */}
+          {isBookOpen && (
+            <GrimoirePages
+              isPageTurned={isPageTurned}
               onEnter={handleEnterSanctum}
+              reducedMotion={prefersReduced}
             />
           )}
 
-          {/* Screen reader live region */}
+          {/* Screen reader announcement live region */}
           <div className="sr-only" aria-live="polite">
-            {isBloomed
-              ? content.intro.spellCasting
-              : content.intro.hint}
+            {isBookOpen
+              ? isPageTurned
+                ? `${intro.page2Line1}. ${intro.page2Line2}`
+                : `${content.profile.name}, ${content.profile.role}`
+              : intro.hint}
           </div>
         </motion.div>
       )}

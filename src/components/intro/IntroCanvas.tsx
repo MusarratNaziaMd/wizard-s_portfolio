@@ -3,124 +3,122 @@
 import React, { useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sparkles } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { useWindowSize } from "@/hooks/useWindowSize";
-
-interface GoldenOrbProps {
-  isHovered: boolean;
-  isBloomed: boolean;
-}
-
-const GoldenOrb: React.FC<GoldenOrbProps> = ({ isHovered, isBloomed }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const glowRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state, delta) => {
-    if (!meshRef.current) return;
-    const t = state.clock.getElapsedTime();
-
-    if (isBloomed) {
-      meshRef.current.scale.lerp(new THREE.Vector3(12, 12, 12), delta * 2.2);
-      if (glowRef.current) {
-        glowRef.current.scale.lerp(new THREE.Vector3(16, 16, 16), delta * 2.5);
-      }
-    } else {
-      const baseScale = isHovered ? 1.25 : 1.0;
-      const pulse = Math.sin(t * 2.6) * 0.08;
-      const targetScale = baseScale + pulse;
-      meshRef.current.scale.lerp(
-        new THREE.Vector3(targetScale, targetScale, targetScale),
-        delta * 6
-      );
-
-      if (glowRef.current) {
-        const outerScale = targetScale * 1.5;
-        glowRef.current.scale.set(outerScale, outerScale, outerScale);
-      }
-    }
-  });
-
-  return (
-    <group position={[0, 0, 0]}>
-      <mesh ref={glowRef}>
-        <sphereGeometry args={[0.42, 32, 32]} />
-        <meshBasicMaterial
-          color="#c9a24b"
-          transparent
-          opacity={isBloomed ? 0.08 : (isHovered ? 0.35 : 0.2)}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[0.3, 32, 32]} />
-        <meshStandardMaterial
-          color="#f2e8cf"
-          emissive="#c9a24b"
-          emissiveIntensity={isBloomed ? 4.5 : (isHovered ? 2.8 : 2.0)}
-          roughness={0.1}
-          metalness={0.9}
-        />
-      </mesh>
-
-      <pointLight
-        position={[0, 0, 0]}
-        color="#c9a24b"
-        intensity={isBloomed ? 12 : (isHovered ? 4.5 : 3)}
-        distance={10}
-      />
-      <ambientLight intensity={0.2} />
-    </group>
-  );
-};
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { Book3D } from "./Book3D";
+import { Wand3D } from "./Wand3D";
+import { IntroSparkles } from "./IntroSparkles";
 
 export interface IntroCanvasProps {
-  isHovered: boolean;
-  isBloomed: boolean;
+  isWandHovered: boolean;
+  isBookOpen: boolean;
+  isPageTurned: boolean;
+  onWandHoverChange: (hovered: boolean) => void;
+  onWandTap: () => void;
+  monogram?: string;
 }
 
+const CameraRig: React.FC<{ isOpen: boolean; isMobile: boolean; reducedMotion: boolean }> = ({
+  isOpen,
+  isMobile,
+  reducedMotion,
+}) => {
+  const targetPos = useRef(new THREE.Vector3(0, 2.8, isMobile ? 5.6 : 5.0));
+
+  useFrame((state, delta) => {
+    if (reducedMotion) {
+      state.camera.position.set(0, isOpen ? (isMobile ? 2.2 : 1.9) : (isMobile ? 3.0 : 2.6), isMobile ? 4.8 : 4.2);
+      state.camera.lookAt(0, -0.1, 0);
+      return;
+    }
+
+    const destY = isOpen ? (isMobile ? 2.2 : 1.9) : (isMobile ? 3.0 : 2.6);
+    const destZ = isOpen ? (isMobile ? 4.8 : 4.1) : (isMobile ? 5.8 : 5.0);
+    targetPos.current.set(0, destY, destZ);
+
+    state.camera.position.lerp(targetPos.current, delta * 2.0);
+    state.camera.lookAt(0, -0.1, 0);
+  });
+
+  return null;
+};
+
 export const IntroCanvas: React.FC<IntroCanvasProps> = ({
-  isHovered,
-  isBloomed,
+  isWandHovered,
+  isBookOpen,
+  isPageTurned,
+  onWandHoverChange,
+  onWandTap,
+  monogram = "MN",
 }) => {
   const { isMobile } = useWindowSize();
-  const sparkleCount = isMobile ? (isBloomed ? 45 : 20) : (isBloomed ? 110 : 45);
+  const prefersReduced = useReducedMotion();
 
   return (
-    <div className="fixed inset-0 w-screen h-screen pointer-events-none z-0">
-      <Canvas
-        camera={{ position: [0, 0, 4.5], fov: 45 }}
-        dpr={[1, 2]}
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: "high-performance",
-        }}
-      >
-        <color attach="background" args={["#0a0e1a"]} />
+    <Canvas
+      gl={{
+        alpha: true,
+        antialias: false,
+        powerPreference: "high-performance",
+        stencil: false,
+        depth: true,
+      }}
+      dpr={[1, isMobile ? 1.2 : 1.5]}
+      camera={{ position: [0, 2.8, isMobile ? 5.8 : 5.0], fov: 42, near: 0.1, far: 40 }}
+      style={{
+        background: "transparent",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <CameraRig
+        isOpen={isBookOpen}
+        isMobile={isMobile}
+        reducedMotion={prefersReduced}
+      />
 
-        <GoldenOrb isHovered={isHovered} isBloomed={isBloomed} />
+      {/* Atmospheric Lighting */}
+      <ambientLight intensity={0.65} color="#161f38" />
+      <directionalLight position={[2, 6, 4]} intensity={1.5} color="#fff6e5" castShadow />
+      <pointLight position={[-3, 1, 2]} intensity={0.9} color="#c9a24b" distance={8} />
 
-        <Sparkles
-          count={sparkleCount}
-          scale={isBloomed ? 14 : 7}
-          size={isBloomed ? 3.5 : 2}
-          speed={isBloomed ? 0.9 : 0.25}
-          color="#c9a24b"
-          opacity={isBloomed ? 0.9 : 0.6}
+      {/* 3D Grimoire Book */}
+      <Book3D
+        isOpen={isBookOpen}
+        isPageTurned={isPageTurned}
+        reducedMotion={prefersReduced}
+        monogram={monogram}
+        isMobile={isMobile}
+      />
+
+      {/* 3D Animated Wand */}
+      <Wand3D
+        isHovered={isWandHovered}
+        isTapped={isBookOpen}
+        onHoverChange={onWandHoverChange}
+        onTap={onWandTap}
+        reducedMotion={prefersReduced}
+      />
+
+      {/* Circular Particle Sparkles & Tap Burst */}
+      <IntroSparkles
+        isTapped={isBookOpen}
+        reducedMotion={prefersReduced}
+        isMobile={isMobile}
+      />
+
+      {/* Lightweight Postprocessing: Bloom & Vignette */}
+      <EffectComposer multisampling={0}>
+        <Bloom
+          luminanceThreshold={0.65}
+          luminanceSmoothing={0.3}
+          intensity={0.7}
+          mipmapBlur
         />
-
-        <EffectComposer multisampling={0}>
-          <Bloom
-            luminanceThreshold={0.25}
-            luminanceSmoothing={0.9}
-            intensity={isBloomed ? 2.8 : 1.4}
-          />
-          <Vignette eskil={false} offset={0.15} darkness={1.15} />
-        </EffectComposer>
-      </Canvas>
-    </div>
+        <Vignette eskil={false} offset={0.2} darkness={0.8} />
+      </EffectComposer>
+    </Canvas>
   );
 };
 

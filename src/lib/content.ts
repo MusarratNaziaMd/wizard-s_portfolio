@@ -54,8 +54,14 @@ export interface IntroContent {
   hint: string;
   skipButton: string;
   enterButton: string;
-  orbAriaLabel: string;
-  spellCasting: string;
+  wandAriaLabel: string;
+  monogram: string;
+  ornament: string;
+  page2Line1: string;
+  page2Line2: string;
+  page2Skills: string[];
+  orbAriaLabel?: string;
+  spellCasting?: string;
 }
 
 export interface SectionMeta {
@@ -95,11 +101,22 @@ export interface ContentData {
 export const content: ContentData = {
   // SAMPLE: replace with real details
   intro: {
-    hint: "Speak the spell. Click to begin.",
+    hint: "Tap the wand to open the book.",
     skipButton: "Skip Intro",
     enterButton: "Enter",
-    orbAriaLabel: "Mystic Golden Orb. Click or press Enter to begin.",
-    spellCasting: "Spell unleashed. Welcome to the sanctum of Rowan Vance.",
+    wandAriaLabel: "Open the book",
+    monogram: "MN",
+    ornament: "✦ ❖ ✦",
+    page2Line1: "Senior Full-Stack Engineer & Systems Craftsman",
+    page2Line2: "Crafting resilient web architectures, reactive interfaces, and scalable computing engines.",
+    page2Skills: [
+      "TypeScript & React",
+      "Three.js & WebGL",
+      "System Architecture",
+      "Performance & Access",
+    ],
+    orbAriaLabel: "Open the book",
+    spellCasting: "The grimoire opens. Welcome to the sanctum.",
   },
   profile: {
     name: "Rowan Vance",
