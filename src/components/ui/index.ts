@@ -4,3 +4,6 @@ export * from "./Navbar";
 export * from "./ScrollProgress";
 export * from "./SmoothScroll";
 export * from "./MotionReveal";
+export * from "./SectionDivider";
+export * from "./InkHeading";
+export * from "./WaxSeal";

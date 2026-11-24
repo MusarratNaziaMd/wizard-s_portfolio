@@ -4,6 +4,11 @@
   --color-navy: #0a0e1a;
   --color-gold: #c9a24b;
   --color-parchment: #f2e8cf;
+  --color-midnight: #0b1030;
+  --color-burgundy: #4a0e1f;
+  --color-forest: #0f3d2e;
+  --color-candle: #ffb347;
+  --color-moon: #cfd8ff;
 
   --font-cinzel: var(--font-cinzel), serif;
   --font-inter: var(--font-inter), sans-serif;
@@ -26,14 +31,14 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), sans-serif;
   overflow-x: hidden;
-  /* Subtle CSS-only parchment & celestial grid texture */
+  /* Deep midnight-to-navy atmosphere with micro-celestial coordinates */
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(201, 162, 75, 0.05) 0%, transparent 70%),
-    radial-gradient(circle at 100% 50%, rgba(201, 162, 75, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 0% 100%, rgba(201, 162, 75, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(11, 16, 48, 0.75) 0%, transparent 75%),
+    radial-gradient(circle at 100% 30%, rgba(207, 216, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 0% 70%, rgba(255, 179, 71, 0.03) 0%, transparent 50%),
     linear-gradient(to right, rgba(201, 162, 75, 0.015) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(201, 162, 75, 0.015) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
 }
 
 /* Accessible focus ring */
@@ -58,4 +63,40 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(201, 162, 75, 0.6);
+}
+
+/* Parchment paper grain & decorative torn borders */
+.parchment-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(16, 22, 43, 0.92) 0%, rgba(10, 14, 26, 0.95) 100%);
+  border: 1px solid rgba(201, 162, 75, 0.28);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(201, 162, 75, 0.03);
+}
+
+.parchment-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(242, 232, 207, 0.03) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.6;
+}
+
+/* Faint academy rune pattern background for sections */
+.rune-bg {
+  background-image: 
+    radial-gradient(circle at 20% 40%, rgba(74, 14, 31, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(15, 61, 46, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(201, 162, 75, 0.03) 0%, transparent 60%);
+}
+
+/* Wax Seal Badge */
+.wax-seal {
+  background: radial-gradient(circle at 35% 35%, #7a152d 0%, #4a0e1f 65%, #2a050e 100%);
+  border: 1px solid rgba(201, 162, 75, 0.5);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
 }

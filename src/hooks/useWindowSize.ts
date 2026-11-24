@@ -8,11 +8,13 @@ export interface WindowDimensions {
   isMobile: boolean;
 }
 
-let cachedSnapshot: WindowDimensions = {
+const SERVER_SNAPSHOT: WindowDimensions = Object.freeze({
   width: 1200,
   height: 800,
   isMobile: false,
-};
+});
+
+let cachedSnapshot: WindowDimensions = SERVER_SNAPSHOT;
 
 function subscribe(callback: () => void) {
   window.addEventListener("resize", callback);
@@ -20,7 +22,7 @@ function subscribe(callback: () => void) {
 }
 
 function getSnapshot(): WindowDimensions {
-  if (typeof window === "undefined") return cachedSnapshot;
+  if (typeof window === "undefined") return SERVER_SNAPSHOT;
   if (
     cachedSnapshot.width !== window.innerWidth ||
     cachedSnapshot.height !== window.innerHeight
@@ -35,11 +37,7 @@ function getSnapshot(): WindowDimensions {
 }
 
 function getServerSnapshot(): WindowDimensions {
-  return {
-    width: 1200,
-    height: 800,
-    isMobile: false,
-  };
+  return SERVER_SNAPSHOT;
 }
 
 export function useWindowSize(): WindowDimensions {
