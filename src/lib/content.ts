@@ -1,13 +1,14 @@
-// SAMPLE: replace with real details
+// TODO confirm: All marked entries represent real candidate data awaiting user URL / handle confirmation.
 
 export interface Profile {
   name: string;
+  initials: string;
   role: string;
   tagline: string;
-  email: string;
-  linkedin: string;
-  github: string;
-  resumeUrl: string;
+  email: string; // TODO confirm
+  linkedin: string; // TODO confirm
+  github: string; // TODO confirm
+  resumeUrl: string; // TODO confirm
 }
 
 export interface ValueItem {
@@ -16,15 +17,18 @@ export interface ValueItem {
 }
 
 export interface AboutContent {
+  chapter: string;
   storyTitle: string;
   subtitle: string;
+  storyLine: string;
   narrative: string;
   paragraphs: string[];
   values: ValueItem[];
+  profileImage: string; // TODO confirm
 }
 
 export interface SkillCategory {
-  category: "Frontend" | "Backend" | "Tools";
+  category: string;
   description: string;
   items: string[];
 }
@@ -33,21 +37,31 @@ export interface ProjectItem {
   id: string;
   title: string;
   role: string;
+  description: string;
   problem: string;
   solution: string;
   techStack: string[];
   result: string;
-  liveUrl: string;
-  repoUrl: string;
+  liveUrl: string; // TODO confirm
+  repoUrl: string; // TODO confirm
+  image: string; // TODO confirm
 }
 
 export interface ExperienceItem {
   id: string;
   title: string;
   org: string;
-  period: string;
+  period: string; // TODO confirm
   summary: string;
   highlights: string[];
+}
+
+export interface AchievementItem {
+  id: string;
+  title: string;
+  org: string;
+  description: string;
+  badge?: string; // TODO confirm
 }
 
 export interface IntroContent {
@@ -65,8 +79,10 @@ export interface IntroContent {
 }
 
 export interface SectionMeta {
+  chapter?: string;
   storyTitle: string;
   subtitle: string;
+  storyLine?: string;
   narrative: string;
 }
 
@@ -74,22 +90,26 @@ export interface ContentData {
   intro: IntroContent;
   profile: Profile;
   hero: SectionMeta & {
-    ctaProjects: string;
-    ctaContact: string;
     greeting: string;
     ctaExplore: string;
     ctaResume: string;
+    ctaProjects: string;
+    ctaContact: string;
     skillChips: string[];
   };
   about: AboutContent;
+  experience: SectionMeta & {
+    items: ExperienceItem[];
+  };
   skills: SectionMeta & {
     groups: SkillCategory[];
+    allSkills: string[];
   };
   projects: SectionMeta & {
     items: ProjectItem[];
   };
-  experience: SectionMeta & {
-    items: ExperienceItem[];
+  achievements: SectionMeta & {
+    items: AchievementItem[];
   };
   contact: SectionMeta & {
     closingMessage: string;
@@ -99,7 +119,7 @@ export interface ContentData {
 }
 
 export const content: ContentData = {
-  // SAMPLE: replace with real details
+  // Intro grimoire parameters
   intro: {
     hint: "Tap the wand to open the book.",
     skipButton: "Skip Intro",
@@ -107,223 +127,227 @@ export const content: ContentData = {
     wandAriaLabel: "Open the book",
     monogram: "MN",
     ornament: "✦ ❖ ✦",
-    page2Line1: "Senior Full-Stack Engineer & Systems Craftsman",
-    page2Line2: "Crafting resilient web architectures, reactive interfaces, and scalable computing engines.",
-    page2Skills: [
-      "TypeScript & React",
-      "Three.js & WebGL",
-      "System Architecture",
-      "Performance & Access",
-    ],
+    page2Line1: "Software Developer | AI & Full-Stack",
+    page2Line2: "Turning ideas into magical digital experiences.",
+    page2Skills: ["Python", "React", "AI / ML", "Generative AI"],
     orbAriaLabel: "Open the book",
     spellCasting: "The grimoire opens. Welcome to the sanctum.",
   },
+
+  // Candidate Personal Profile
   profile: {
-    name: "Rowan Vance",
-    role: "Senior Full-Stack Engineer & Systems Craftsman",
-    tagline: "Architecting resilient web infrastructure, reactive interfaces, and scalable computational engines.",
-    email: "rowan.vance@example.com",
-    linkedin: "https://linkedin.com/in/example",
-    github: "https://github.com/example",
-    resumeUrl: "/resume.pdf",
+    name: "Mohammad Musarrat Nazia",
+    initials: "MN",
+    role: "Software Developer | AI & Full-Stack",
+    tagline: "Turning ideas into magical digital experiences",
+    email: "nazia.dev@example.com", // TODO confirm: replace with real email
+    linkedin: "https://linkedin.com/in/TODO", // TODO confirm: replace with real LinkedIn URL
+    github: "https://github.com/TODO", // TODO confirm: replace with real GitHub URL
+    resumeUrl: "/resume.pdf", // TODO confirm: place real resume PDF in public/
   },
 
+  // Hero / Prologue
   hero: {
-    storyTitle: "The Spark",
-    subtitle: "Architecture & Creative Engineering",
-    narrative: "Every enduring construct begins with a deliberate synthesis of structure, logic, and aesthetic discipline.",
-    ctaProjects: "Explore The Quests",
-    ctaContact: "Dispatch a Message",
+    chapter: "Prologue",
+    storyTitle: "The Awakening",
+    subtitle: "Digital Sorcery & Software Engineering",
+    storyLine: "Turning ideas into magical digital experiences.",
+    narrative: "Turning ideas into magical digital experiences.",
     greeting: "Hello, I'm",
-    ctaExplore: "Explore My Work",
+    ctaExplore: "Explore The Quests",
     ctaResume: "Download Resume",
-    skillChips: [
-      "TypeScript",
-      "React / Next.js",
-      "Three.js / WebGL",
-      "Node.js",
-      "System Architecture",
-      "Tailwind CSS",
-    ],
+    ctaProjects: "Explore The Quests",
+    ctaContact: "Dispatch Missive",
+    skillChips: ["Python", "React", "AI / ML", "Generative AI"], // TODO confirm
   },
 
+  // Chapter I "The Spark" - About
   about: {
-    storyTitle: "The Origin",
-    subtitle: "Who I am and what drives my craft",
-    narrative: "Bridging the rigor of distributed systems with the nuance of human-centric interfaces.",
+    chapter: "Chapter I",
+    storyTitle: "The Spark",
+    subtitle: "Curiosity, Academics & Digital Craft",
+    storyLine: "Always curious. Always coding.",
+    narrative: "Always curious. Always coding.",
     paragraphs: [
-      "I am a full-stack engineer dedicated to building software that endures. With over seven years of engineering experience across high-growth startups and established software institutions, my focus centers on resilient distributed systems, sub-second web performance, and expressive user experiences.",
-      "My approach balances mechanical sympathy with mathematical elegance. I view modern software development much like classical scholarly research: systems require uncompromising structural foundations, transparent mental models, and relentless attention to operational telemetry.",
-      "When not orchestrating microservices or fine-tuning WebGL rendering pipelines, I mentor junior developers, contribute to open-source tooling, and write technical essays dissecting systems design and interface ergonomics.",
+      "I am a curiosity-driven B.Tech Information Technology graduate passionate about transforming complex computational ideas into elegant, reliable digital realities.",
+      "My journey began with an insatiable appetite to understand how systems tick under the hood. From low-level algorithmic logic to high-level neural networks and reactive user interfaces, I approach software engineering as an art form rooted in discipline, continuous learning, and creative problem-solving.",
+      "Whether developing responsive cross-platform web and mobile experiences or engineering intelligent voice and language systems, I thrive on writing clean, purposeful code that delivers real human impact.",
     ],
     values: [
       {
-        title: "Deterministic Architecture",
-        description: "Systems should behave predictably under stress. I design architectures with strict boundaries, idempotent operations, and fault-tolerant failovers.",
+        title: "Perpetual Curiosity",
+        description: "Technology moves fast. Approaching every architectural challenge with humility and a researcher's mind ensures continuous growth.",
       },
       {
-        title: "Speed as a Moral Imperative",
-        description: "Latency degrades human focus. Every millisecond saved across network boundaries and browser rendering loops honors the user's finite attention.",
+        title: "Rigorous Engineering",
+        description: "From data structures to UI rendering loops, writing clean, tested, and self-documenting code is a non-negotiable principle.",
       },
       {
-        title: "Craft Over Expediency",
-        description: "Technical debt is a compound tax. I champion clean abstractions, self-documenting codebases, and exhaustive end-to-end reliability.",
+        title: "Human-Centric Impact",
+        description: "Code and machine learning models are runes; their ultimate purpose is to solve genuine problems and create delightfully intuitive experiences.",
+      },
+    ],
+    profileImage: "/images/about/profile.webp", // TODO confirm: place portrait image at public/images/about/profile.webp
+  },
+
+  // Chapter II "The Apprenticeship" - Experience
+  experience: {
+    chapter: "Chapter II",
+    storyTitle: "The Apprenticeship",
+    subtitle: "Guild Internships & Real-World Craft",
+    storyLine: "Forging craft through real-world guild challenges.",
+    narrative: "Forging craft through real-world guild challenges.",
+    items: [
+      {
+        id: "exp-incux",
+        title: "Software Developer Intern",
+        org: "Incux",
+        period: "Apr 2026 – Present", // TODO confirm
+        summary: "Developed modern responsive web applications and a mobile app, contributed to core features of JobMatch, and coordinated Campus Recruitment Training (CRT).",
+        highlights: [
+          "Developed and deployed responsive web interfaces and cross-platform mobile app components with modern web tooling.",
+          "Collaborated directly on JobMatch platform capabilities, streamlining candidate-opportunity workflows.",
+          "Led and managed CRT coordination, organizing structured technical workshops and mentoring student peers.",
+        ],
+      },
+      {
+        id: "exp-infosys",
+        title: "AI/ML Intern",
+        org: "Infosys Springboard",
+        period: "Sep – Nov 2025", // TODO confirm
+        summary: "Engineered an intelligent conversational IVR system integrating Natural Language Understanding (NLU) and real-time sentiment analysis.",
+        highlights: [
+          "Built conversational AI pipelines to transcribe audio, interpret caller intents, and extract emotional sentiment in real time.",
+          "Integrated NLU models into interactive voice workflows to drastically reduce misrouted inquiries.",
+          "Developed automated logging and telemetry dashboards to evaluate system accuracy and conversational flow latency.",
+        ],
       },
     ],
   },
 
+  // Chapter III "The Spellbook" - Skills
   skills: {
+    chapter: "Chapter III",
     storyTitle: "The Spellbook",
-    subtitle: "Grouped technical proficiencies and tooling",
-    narrative: "An inventory of battle-tested languages, frameworks, and operational platforms mastered through production practice.",
+    subtitle: "Languages, Modern Frameworks & Machine Intelligence",
+    storyLine: "A disciplined compendium of languages, frameworks, and modern intelligence systems.",
+    narrative: "A disciplined compendium of languages, frameworks, and modern intelligence systems.",
+    allSkills: [
+      "Python",
+      "Java",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Machine Learning",
+      "NLP",
+      "GenAI",
+      "Supabase",
+      "Git & GitHub",
+    ],
     groups: [
       {
-        category: "Frontend",
-        description: "Modern rendering engines, state machines, and performant web graphics.",
-        items: [
-          "TypeScript",
-          "React 19 / Next.js (App Router)",
-          "Three.js / React Three Fiber",
-          "Tailwind CSS v4",
-          "GSAP & Web Animations API",
-          "WebGL & Custom GLSL Shaders",
-          "HTML5 Semantic Architecture",
-          "Web Accessibility (WCAG 2.1 AAA)",
-        ],
+        category: "Languages & Core",
+        description: "Versatile foundations for scalable software and systems logic.",
+        items: ["Python", "Java", "JavaScript", "TypeScript"],
       },
       {
-        category: "Backend",
-        description: "Scalable data ingestion pipelines, APIs, and persistent storage layers.",
-        items: [
-          "Node.js & Bun",
-          "Go (Golang)",
-          "PostgreSQL & Prisma",
-          "Redis & Memory Caching",
-          "RESTful APIs & GraphQL",
-          "Distributed Event Streams (Kafka)",
-          "WebSocket & Real-time Protocols",
-          "Authentication & RBAC Security",
-        ],
+        category: "Frameworks & Web",
+        description: "Modern client and server architectures delivering reactive performance.",
+        items: ["React", "Next.js", "Node.js", "Tailwind CSS"],
       },
       {
-        category: "Tools",
-        description: "Observability, infrastructure automation, and developer ergonomics.",
-        items: [
-          "Docker & Container Orchestration",
-          "Git Version Control & CI/CD Pipelines",
-          "Linux Environment Administration",
-          "Vercel & AWS Cloud Architecture",
-          "Vitest, Jest & Playwright Testing",
-          "Turbopack & Webpack Build Tooling",
-          "OpenTelemetry & Performance Tracing",
-          "Figma to Code Systematic Design",
-        ],
+        category: "AI, Data & Infrastructure",
+        description: "Machine learning, language intelligence, and cloud backend solutions.",
+        items: ["Machine Learning", "NLP", "GenAI", "Supabase", "Git & GitHub"],
       },
     ],
   },
 
+  // Chapter IV "The Quests" - Projects
   projects: {
+    chapter: "Chapter IV",
     storyTitle: "The Quests",
-    subtitle: "Selected production milestones and technical studies",
-    narrative: "Case studies demonstrating end-to-end engineering from architectural conception to verified impact.",
+    subtitle: "Production Projects & Artificial Intelligence Systems",
+    storyLine: "Forged artifacts solving tangible problems with code and artificial intelligence.",
+    narrative: "Forged artifacts solving tangible problems with code and artificial intelligence.",
     items: [
       {
-        id: "astral-orrery",
-        title: "Astral Orrery Simulator",
-        role: "Lead Graphics Engineer & System Architect",
-        problem: "Simulating n-body gravitational mechanics and orbital telemetry in web browsers was computationally prohibitive for standard DOM and canvas solutions.",
-        solution: "Architected a GPU-accelerated compute pipeline using WebGL instanced meshes and Three.js with custom GLSL shaders, running orbital trajectories off-thread via Web Workers.",
-        techStack: ["TypeScript", "Three.js", "R3F", "GLSL", "Next.js", "Web Workers"],
-        result: "Sustained locked 60 FPS across desktop and mobile devices while rendering 10,000 concurrent orbital bodies.",
-        liveUrl: "https://example.com/astral-orrery",
-        repoUrl: "https://github.com/example/astral-orrery",
+        id: "jobmatch",
+        title: "JobMatch",
+        role: "Full-Stack Developer",
+        description: "A modern job-matching platform and mobile application connecting talent with tailored career opportunities.",
+        problem: "Job hunters face cumbersome application processes and overwhelming, unfocused job feeds with low relevancy.",
+        solution: "Engineered an intelligent matching platform featuring a clean responsive web interface, mobile app integration, and streamlined candidate-job matching algorithms.",
+        techStack: ["React", "Python", "Supabase", "Node.js", "AI / ML"],
+        result: "Provided rapid filtering, intuitive mobile navigation, and seamless profile-to-job recommendation workflows.",
+        liveUrl: "https://example.com/jobmatch", // TODO confirm: replace with real demo URL
+        repoUrl: "https://github.com/TODO/jobmatch", // TODO confirm: replace with real repository URL
+        image: "/images/projects/jobmatch.webp", // TODO confirm: place project screenshot at public/images/projects/jobmatch.webp
       },
       {
-        id: "chronicle-cms",
-        title: "Chronicle Collaborative Engine",
-        role: "Full-Stack Engineer",
-        problem: "Distributed research teams faced data divergence and latency spikes during real-time document annotation across intermittent networks.",
-        solution: "Implemented an offline-first Conflict-Free Replicated Data Type (CRDT) engine over WebSocket streams with local IndexedDB persistence and PostgreSQL sync.",
-        techStack: ["Next.js", "TypeScript", "Node.js", "WebSockets", "CRDTs", "PostgreSQL"],
-        result: "Reduced sync resolution conflicts to zero and decreased end-to-end peer mutation latency to under 35ms globally.",
-        liveUrl: "https://example.com/chronicle-cms",
-        repoUrl: "https://github.com/example/chronicle-cms",
-      },
-      {
-        id: "aegis-telemetry",
-        title: "Aegis Observability Gateway",
-        role: "Backend & Infrastructure Engineer",
-        problem: "High-throughput microservices produced over 40,000 metrics per second, overwhelming the centralized monitoring database.",
-        solution: "Constructed a stream processing buffer in Go with backpressure buffering, Redis ring-buffers, and automated downsampling prior to long-term storage.",
-        techStack: ["Go", "Redis", "Docker", "Prometheus", "Grafana", "TimescaleDB"],
-        result: "Cut monitoring compute costs by 58% while maintaining sub-second alert dispatch on production anomalies.",
-        liveUrl: "https://example.com/aegis-telemetry",
-        repoUrl: "https://github.com/example/aegis-telemetry",
-      },
-      {
-        id: "runic-design-system",
-        title: "Runic Enterprise UI Kit",
-        role: "Design Technologist & Lead Maintainer",
-        problem: "A federated engineering organization suffered from fragmented UI standards, inconsistent accessibility, and code bloat across 12 product surfaces.",
-        solution: "Authored an accessible, headless design system with tokenized Tailwind CSS themes, rigorous keyboard navigation traps, and automated visual regression testing.",
-        techStack: ["React", "TypeScript", "Tailwind CSS", "Storybook", "Playwright", "npm"],
-        result: "Adopted across all 12 products, reducing UI defect tickets by 72% and shaving 35% off feature frontend delivery cycles.",
-        liveUrl: "https://example.com/runic-ui",
-        repoUrl: "https://github.com/example/runic-ui",
+        id: "ai-conversational-ivr",
+        title: "AI Conversational IVR",
+        role: "AI / ML Engineer",
+        description: "Intelligent interactive voice response system powered by real-time transcription, Natural Language Understanding, and sentiment analysis.",
+        problem: "Legacy touch-tone IVR systems are rigid, causing caller frustration and high transfer rates due to misinterpreted requests.",
+        solution: "Architected a conversational voice pipeline with NLU intent recognition and real-time sentiment scoring to dynamically adapt responses.",
+        techStack: ["Python", "NLP", "GenAI", "Machine Learning", "Node.js"],
+        result: "Delivered sub-second transcript processing with accurate caller emotion detection and adaptive intent routing.",
+        liveUrl: "https://example.com/ai-ivr", // TODO confirm: replace with real demo URL
+        repoUrl: "https://github.com/TODO/ai-conversational-ivr", // TODO confirm: replace with real repository URL
+        image: "/images/projects/ivr.webp", // TODO confirm: place project screenshot at public/images/projects/ivr.webp
       },
     ],
   },
 
-  experience: {
-    storyTitle: "The Apprenticeship",
-    subtitle: "Professional chronicle and organizational impact",
-    narrative: "A disciplined trajectory through specialized engineering roles, scaling systems, and elevating engineering standards.",
+  // Chapter V "The Honours" - Achievements
+  achievements: {
+    chapter: "Chapter V",
+    storyTitle: "The Honours",
+    subtitle: "Distinctions, Competitions & Research Accolades",
+    storyLine: "Distinctions earned along the scholarly and competitive path.",
+    narrative: "Distinctions earned along the scholarly and competitive path.",
     items: [
       {
-        id: "exp-1",
-        title: "Staff Software Engineer",
-        org: "Vanguard Systems Labs",
-        period: "2023 – Present",
-        summary: "Directing technical architecture for next-generation distributed data pipelines and client-facing analytical dashboards.",
-        highlights: [
-          "Spearheaded architectural transition to Next.js App Router and edge caching, cutting average TTFB by 42%.",
-          "Mentored an engineering squad of 8 developers in advanced TypeScript patterns and automated testing disciplines.",
-          "Instituted weekly architecture reviews and codified design RFC standards across engineering groups.",
-        ],
+        id: "sih-top6",
+        title: "Smart India Hackathon (SIH) — Top 6",
+        org: "Ministry of Education & AICTE",
+        description: "Achieved Top 6 national standing among thousands of collegiate teams for engineering innovative computational solutions under rigorous hackathon conditions.",
+        badge: "National Finalist", // TODO confirm
       },
       {
-        id: "exp-2",
-        title: "Senior Full-Stack Developer",
-        org: "Aetherial Media Labs",
-        period: "2021 – 2023",
-        summary: "Led frontend architecture and API service design for interactive 3D simulations and consumer media experiences.",
-        highlights: [
-          "Designed and delivered 4 high-traffic WebGL interactive campaigns handling 500k+ daily unique visitors.",
-          "Engineered a resilient GraphQL orchestration gateway unifying 6 legacy microservices.",
-          "Achieved 100/100 Lighthouse performance and accessibility benchmarks across flagship properties.",
-        ],
+        id: "research-scopus",
+        title: "Research Publication (JETIR + Scopus)",
+        org: "Journal of Emerging Technologies and Innovative Research",
+        description: "Authored and published peer-reviewed scholarly research indexed in JETIR and recognized in Scopus academic databases.",
+        badge: "Published Author", // TODO confirm
       },
       {
-        id: "exp-3",
-        title: "Software Engineer",
-        org: "Halcyon Core Technologies",
-        period: "2019 – 2021",
-        summary: "Engineered responsive client applications, RESTful microservices, and automated continuous delivery pipelines.",
-        highlights: [
-          "Developed core features for real-time collaboration dashboards using React and WebSocket transports.",
-          "Authored unit and end-to-end integration test suites increasing automated test coverage from 44% to 91%.",
-          "Optimized PostgreSQL query indexes and schema designs, reducing heavy query latencies by 60%.",
-        ],
+        id: "quantum-valley",
+        title: "Quantum Valley AP — Semifinalist",
+        org: "Quantum Valley Innovation Initiative",
+        description: "Reached semifinalist status in competitive technological innovation challenges for breakthrough digital concept design.",
+        badge: "Semifinalist", // TODO confirm
+      },
+      {
+        id: "wipro-scholar",
+        title: "Wipro TalentNext Scholar",
+        org: "Wipro Certified Digital Skills",
+        description: "Honoured as a certified Wipro TalentNext Scholar upon completing rigorous training in advanced Java, algorithms, and full-stack software methodologies.",
+        badge: "Certified Scholar", // TODO confirm
       },
     ],
   },
 
+  // Epilogue "The Owl Post" - Contact
   contact: {
+    chapter: "Epilogue",
     storyTitle: "The Owl Post",
-    subtitle: "Direct channels of dispatch and collaboration",
-    narrative: "Open for technical leadership roles, architectural advisement, and ambitious full-stack ventures.",
-    closingMessage: "Whether you seek to forge a new system architecture, optimize a high-stakes WebGL project, or consult on software strategy, my communication channel is directly available.",
-    resumeLabel: "Download Curriculum Vitae (PDF)",
-    availability: "Currently considering select opportunities for 2026.",
+    subtitle: "Direct Dispatch & Missives",
+    storyLine: "Let's build something amazing together.",
+    narrative: "Let's build something amazing together.",
+    closingMessage: "Let's build something amazing together. Whether you have an exciting software challenge, an AI venture, or wish to connect, my inbox is always open.",
+    resumeLabel: "Download Resume (PDF)",
+    availability: "Available for Software Developer and AI & Full-Stack roles.",
   },
 };
