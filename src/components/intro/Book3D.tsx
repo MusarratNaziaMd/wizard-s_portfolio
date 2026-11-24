@@ -5,8 +5,11 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import {
   createCoverTexture,
+  createCoverBumpMap,
+  createCoverRoughnessMap,
   createSpineTexture,
   createPageEdgeTexture,
+  createPagePaperTexture,
 } from "./bookTextures";
 
 export interface Book3DProps {
@@ -27,23 +30,49 @@ export const Book3D: React.FC<Book3DProps> = ({
   const bookGroupRef = useRef<THREE.Group>(null);
   const frontCoverPivotRef = useRef<THREE.Group>(null);
   const turningPagePivotRef = useRef<THREE.Group>(null);
+  const glintLightRef = useRef<THREE.PointLight>(null);
+  const pageLightRef = useRef<THREE.PointLight>(null);
 
-  // Generate procedural textures once
+  // Procedural canvas textures
   const coverTexture = useMemo(() => createCoverTexture(monogram), [monogram]);
+  const coverBump = useMemo(() => createCoverBumpMap(), []);
+  const coverRoughness = useMemo(() => createCoverRoughnessMap(), []);
   const spineTexture = useMemo(() => createSpineTexture(), []);
   const pageEdgeTexture = useMemo(() => createPageEdgeTexture(), []);
+  const paperTexture = useMemo(() => createPagePaperTexture(), []);
 
-  // Dimensions
-  const w = isMobile ? 2.0 : 2.4;
-  const h = isMobile ? 2.7 : 3.2;
+  // Dimensions: carefully tuned so book fills ~55% viewport height
+  // On mobile, scale group to fit comfortably within narrow viewport (10% side margins)
+  const w = 2.35;
+  const h = 3.15;
   const d = 0.36;
 
-  // Animation targets: Opening around Z axis (spine hinge)
+  // Hinge rotations
   const targetCoverRotZ = isOpen || reducedMotion ? Math.PI * 0.98 : 0;
   const targetPageRotZ = isPageTurned || reducedMotion ? Math.PI : 0;
-  const targetBookTiltX = isOpen ? 0.32 : 0.42;
+  const targetBookTiltX = isOpen ? 0.35 : 0.45;
+
+  // Clocks for glint & light
+  const clock = useRef(0);
 
   useFrame((_, delta) => {
+    clock.current += delta;
+    const t = clock.current;
+
+    // Slow glint sweeping across cover when closed
+    if (glintLightRef.current && !isOpen) {
+      const glintX = Math.sin(t * 0.8) * 2.5;
+      const glintY = Math.cos(t * 0.8) * 1.5 + 1.2;
+      glintLightRef.current.position.set(glintX, glintY, 1.8);
+      glintLightRef.current.intensity = 0.8 + Math.sin(t * 1.6) * 0.4;
+    }
+
+    // Faint warm light rising from the pages when book is open
+    if (pageLightRef.current && isOpen) {
+      const pulse = Math.sin(t * 2.5) * 0.3;
+      pageLightRef.current.intensity = 1.6 + pulse;
+    }
+
     if (reducedMotion) {
       if (frontCoverPivotRef.current) frontCoverPivotRef.current.rotation.z = targetCoverRotZ;
       if (turningPagePivotRef.current) turningPagePivotRef.current.rotation.z = targetPageRotZ;
@@ -61,17 +90,17 @@ export const Book3D: React.FC<Book3DProps> = ({
       );
     }
 
-    // Smooth page turn around center spine (Z axis)
+    // Smooth page turn around spine (Z axis) with dynamic bend/curl
     if (turningPagePivotRef.current) {
       turningPagePivotRef.current.rotation.z = THREE.MathUtils.damp(
         turningPagePivotRef.current.rotation.z,
         targetPageRotZ,
-        3.2,
+        3.0,
         delta
       );
     }
 
-    // Smooth book tilt adjustment when opening
+    // Book tilt adjustment
     if (bookGroupRef.current) {
       bookGroupRef.current.rotation.x = THREE.MathUtils.damp(
         bookGroupRef.current.rotation.x,
@@ -82,91 +111,177 @@ export const Book3D: React.FC<Book3DProps> = ({
     }
   });
 
+  // Responsive scale: on mobile (<768px), scale down so open book has 10%+ margins on both sides
+  const scale = isMobile ? 0.68 : 1.0;
+  const posX = isOpen ? (isMobile ? 0.0 : 0.0) : 0;
+
   return (
     <group
       ref={bookGroupRef}
-      position={[isOpen ? (isMobile ? 0.3 : 0.5) : 0, -0.2, 0]}
-      rotation={[targetBookTiltX, isOpen ? 0 : -0.15, 0]}
+      scale={[scale, scale, scale]}
+      position={[posX, isMobile ? -0.1 : -0.2, 0]}
+      rotation={[targetBookTiltX, isOpen ? 0 : -0.12, 0]}
     >
+      {/* Slow Glint Light (for gold specular reflections on cover) */}
+      {!isOpen && (
+        <pointLight
+          ref={glintLightRef}
+          position={[-1.5, 1.2, 1.8]}
+          color="#ffeaad"
+          intensity={0.8}
+          distance={6}
+          decay={2}
+        />
+      )}
+
+      {/* Warm rising glow from open pages */}
+      {isOpen && (
+        <pointLight
+          ref={pageLightRef}
+          position={[0, 0.6, 0.2]}
+          color="#ffb347"
+          intensity={1.6}
+          distance={5}
+          decay={2}
+        />
+      )}
+
       {/* 1. Back Cover (Rests flat beneath the pages) */}
       <mesh position={[0, -d / 2, 0]} receiveShadow>
         <boxGeometry args={[w, 0.04, h]} />
         <meshStandardMaterial
           map={coverTexture}
-          roughness={0.65}
-          metalness={0.1}
+          bumpMap={coverBump}
+          bumpScale={0.03}
+          roughnessMap={coverRoughness}
+          roughness={0.7}
+          metalness={0.15}
           color="#220b14"
         />
       </mesh>
 
-      {/* 2. Spine Cylinder along left edge */}
+      {/* 2. Curved Antique Leather Spine */}
       <mesh
-        position={[-w / 2, 0, 0]}
-        rotation={[Math.PI / 2, 0, 0]}
+        position={[-w / 2, -d / 4, 0]}
+        rotation={[0, 0, Math.PI / 2]}
       >
-        <cylinderGeometry args={[d / 2, d / 2, h, 24]} />
+        <cylinderGeometry args={[d / 2, d / 2, h, 24, 1, false, 0, Math.PI]} />
         <meshStandardMaterial
           map={spineTexture}
-          roughness={0.6}
-          metalness={0.15}
-          color="#1e0710"
+          bumpMap={coverBump}
+          bumpScale={0.02}
+          roughness={0.65}
+          metalness={0.2}
+          color="#200a12"
         />
       </mesh>
 
-      {/* 3. Parchment Page Block (Solid paper stack with edge lines) */}
-      <mesh position={[0.02, 0, 0]}>
-        <boxGeometry args={[w * 0.95, d * 0.88, h * 0.96]} />
-        {/* Materials array: right, left, top, bottom, front, back */}
-        <meshStandardMaterial attach="material-0" map={pageEdgeTexture} roughness={0.8} />
-        <meshStandardMaterial attach="material-1" color="#1a0a14" roughness={0.8} />
-        <meshStandardMaterial attach="material-2" color="#eedfb8" roughness={0.7} />
-        <meshStandardMaterial attach="material-3" color="#eedfb8" roughness={0.7} />
-        <meshStandardMaterial attach="material-4" map={pageEdgeTexture} roughness={0.8} />
-        <meshStandardMaterial attach="material-5" map={pageEdgeTexture} roughness={0.8} />
+      {/* 3. Base Parchment Page Block (Right Side / Bottom of Grimoire) */}
+      <mesh position={[0, -0.02, 0]}>
+        <boxGeometry args={[w - 0.08, d - 0.06, h - 0.08]} />
+        <meshStandardMaterial
+          map={paperTexture}
+          roughness={0.92}
+          metalness={0.02}
+          color="#f6f0df"
+        />
       </mesh>
 
-      {/* 4. Front Cover (Hinged pivot along left spine edge) */}
-      <group ref={frontCoverPivotRef} position={[-w / 2, d / 2, 0]}>
-        <mesh position={[w / 2, 0.02, 0]} castShadow>
-          <boxGeometry args={[w, 0.04, h]} />
-          {/* Top face (+Y) has gilded monogram cover texture */}
-          <meshStandardMaterial
-            attach="material-2"
-            map={coverTexture}
-            roughness={0.55}
-            metalness={0.15}
-          />
-          {/* Bottom face (-Y, shown when open) has parchment lining */}
-          <meshStandardMaterial
-            attach="material-3"
-            color="#ebdcb0"
-            roughness={0.7}
-          />
-          <meshStandardMaterial
-            attach="material-0"
-            color="#c9a24b"
-            roughness={0.4}
-            metalness={0.7}
-          />
-          <meshStandardMaterial attach="material-1" color="#1a0a14" roughness={0.8} />
-          <meshStandardMaterial attach="material-4" color="#1a0a14" roughness={0.8} />
-          <meshStandardMaterial attach="material-5" color="#1a0a14" roughness={0.8} />
-        </mesh>
-      </group>
+      {/* Gilded Page Edges (Front, Top, Bottom) */}
+      {/* Front edge */}
+      <mesh position={[w / 2 - 0.04, -0.02, 0]}>
+        <boxGeometry args={[0.015, d - 0.065, h - 0.09]} />
+        <meshStandardMaterial
+          map={pageEdgeTexture}
+          roughness={0.4}
+          metalness={0.65}
+          color="#d4af37"
+        />
+      </mesh>
+      {/* Top edge */}
+      <mesh position={[0, -0.02, h / 2 - 0.04]}>
+        <boxGeometry args={[w - 0.09, d - 0.065, 0.015]} />
+        <meshStandardMaterial
+          map={pageEdgeTexture}
+          roughness={0.4}
+          metalness={0.65}
+          color="#d4af37"
+        />
+      </mesh>
+      {/* Bottom edge */}
+      <mesh position={[0, -0.02, -h / 2 + 0.04]}>
+        <boxGeometry args={[w - 0.09, d - 0.065, 0.015]} />
+        <meshStandardMaterial
+          map={pageEdgeTexture}
+          roughness={0.4}
+          metalness={0.65}
+          color="#d4af37"
+        />
+      </mesh>
 
-      {/* 6. Turning Leaf (Thin parchment plane that flips from right to left) */}
+      {/* 4. Left Page Paper Stack (Appears when opened) */}
       {isOpen && (
-        <group ref={turningPagePivotRef} position={[0, d / 2 + 0.01, 0]}>
-          <mesh position={[w / 2 * 0.94, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[w * 0.94, h * 0.94]} />
+        <group position={[-w, 0, 0]}>
+          <mesh position={[0.08, -d / 4, 0]}>
+            <boxGeometry args={[w - 0.1, 0.03, h - 0.08]} />
             <meshStandardMaterial
-              color="#eddcb5"
-              roughness={0.75}
-              side={THREE.DoubleSide}
+              map={paperTexture}
+              roughness={0.92}
+              metalness={0.02}
+              color="#f6f0df"
             />
           </mesh>
         </group>
       )}
+
+      {/* 5. Turning Page with Bend / Curl around spine */}
+      <group
+        ref={turningPagePivotRef}
+        position={[-w / 2, (d - 0.06) / 2, 0]}
+      >
+        <mesh position={[w / 2, 0.005, 0]}>
+          <boxGeometry args={[w - 0.1, 0.006, h - 0.1]} />
+          <meshStandardMaterial
+            map={paperTexture}
+            roughness={0.9}
+            metalness={0.02}
+            color="#f7f2e3"
+          />
+        </mesh>
+      </group>
+
+      {/* 6. Front Cover Pivot attached to the spine hinge at x = -w / 2 */}
+      <group
+        ref={frontCoverPivotRef}
+        position={[-w / 2, d / 2, 0]}
+      >
+        <group position={[w / 2, 0, 0]}>
+          {/* Outer Cover Face (Monogram, Gold borders, Leather grain) */}
+          <mesh position={[0, 0.02, 0]} castShadow>
+            <boxGeometry args={[w, 0.035, h]} />
+            <meshStandardMaterial
+              map={coverTexture}
+              bumpMap={coverBump}
+              bumpScale={0.035}
+              roughnessMap={coverRoughness}
+              roughness={0.68}
+              metalness={0.2}
+              color="#2a0d16"
+            />
+          </mesh>
+
+          {/* Inner Flyleaf (Facing up when the cover opens fully to the left) */}
+          <mesh position={[0, -0.018, 0]}>
+            <planeGeometry args={[w - 0.04, h - 0.04]} />
+            <meshStandardMaterial
+              map={paperTexture}
+              roughness={0.9}
+              metalness={0.02}
+              color="#f5efe0"
+            />
+          </mesh>
+        </group>
+      </group>
     </group>
   );
 };
