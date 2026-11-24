@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0a0e1a;
+  --color-gold: #c9a24b;
+  --color-parchment: #f2e8cf;
+
+  --font-cinzel: var(--font-cinzel), serif;
+  --font-inter: var(--font-inter), sans-serif;
+  --font-cormorant: var(--font-cormorant), serif;
+}
+
+:root {
+  --background: #0a0e1a;
+  --foreground: #f2e8cf;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #0a0e1a;
+  color: #f2e8cf;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar matching academy gold/navy */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0e1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c9a24b33;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c9a24b88;
+}
