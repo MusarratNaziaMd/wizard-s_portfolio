@@ -5,5 +5,6 @@ export * from "./Book3D";
 export * from "./Wand3D";
 export * from "./IntroSparkles";
 export * from "./GrimoirePages";
+export * from "./NameRiseSequence";
 export * from "./bookTextures";
 export * from "./SparklesSprite";
