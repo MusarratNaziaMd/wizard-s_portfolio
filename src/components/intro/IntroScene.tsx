@@ -9,7 +9,7 @@ const DynamicIntroCanvas = dynamic<IntroCanvasProps>(
   {
     ssr: false,
     loading: () => (
-      <div className="absolute inset-0 bg-navy flex items-center justify-center">
+      <div className="fixed inset-0 w-screen h-screen bg-navy flex items-center justify-center">
         <div className="w-6 h-6 rounded-full bg-gold/50 blur-sm animate-pulse" />
       </div>
     ),
@@ -26,7 +26,7 @@ export const IntroScene: React.FC<IntroSceneProps> = ({
   isBloomed,
 }) => {
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden bg-navy">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-navy z-0 pointer-events-none">
       <DynamicIntroCanvas isHovered={isHovered} isBloomed={isBloomed} />
     </div>
   );

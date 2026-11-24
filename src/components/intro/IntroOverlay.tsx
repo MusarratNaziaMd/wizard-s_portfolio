@@ -21,7 +21,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
   const [showHint, setShowHint] = useState<boolean>(false);
   const [isExiting, setIsExiting] = useState<boolean>(false);
 
-  // 1. After 1.5s, fade in the hint text below the orb
+  // 1. After 1.5s, fade in hint text
   useEffect(() => {
     if (prefersReduced) return;
     const hintTimer = setTimeout(() => {
@@ -31,7 +31,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
     return () => clearTimeout(hintTimer);
   }, [prefersReduced]);
 
-  // Lock body scroll while the intro is active
+  // Lock body scroll while intro is active
   useEffect(() => {
     if (!hasSkipped && !isExiting) {
       document.body.style.overflow = "hidden";
@@ -44,13 +44,11 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
     };
   }, [hasSkipped, isExiting]);
 
-  // Handle spell unleash trigger (click or keyboard Enter/Space)
   const triggerSpell = () => {
     if (isBloomed || prefersReduced) return;
     setIsBloomed(true);
   };
 
-  // Handle final Enter button click to unveil the portfolio
   const handleEnterSanctum = () => {
     setIsExiting(true);
     setTimeout(() => {
@@ -59,7 +57,6 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
     }, 600);
   };
 
-  // Handle Skip intro button
   const handleSkip = () => {
     setIsExiting(true);
     setTimeout(() => {
@@ -68,12 +65,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
     }, 300);
   };
 
-  // If already skipped in session storage or reduced motion bypassed, don't show
-  if (!isReady) {
-    return null;
-  }
-
-  if (hasSkipped) {
+  if (!isReady || hasSkipped) {
     return null;
   }
 
@@ -85,16 +77,17 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-navy select-none"
+          className="fixed inset-0 w-screen h-screen z-50 flex flex-col items-center justify-center bg-navy select-none"
           role="dialog"
           aria-modal="true"
           aria-label="Sanctum Intro Experience"
         >
-          {/* Visible Skip intro button at all times */}
+          {/* Skip Intro button positioned top-right with styling */}
           <div className="absolute top-6 right-6 z-40">
             <button
+              type="button"
               onClick={handleSkip}
-              className="font-cinzel text-xs uppercase tracking-widest text-parchment/70 hover:text-gold border border-gold/25 hover:border-gold/60 bg-navy/60 px-4 py-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer"
+              className="font-cinzel text-xs uppercase tracking-widest text-parchment/80 hover:text-gold border border-gold/30 hover:border-gold bg-navy/80 px-4 py-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer shadow-md"
             >
               {content.intro.skipButton}
             </button>
@@ -105,7 +98,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
             <IntroScene isHovered={isHovered} isBloomed={isBloomed} />
           )}
 
-          {/* Interactive Accessible Orb Button (hidden once bloomed) */}
+          {/* Interactive Accessible Orb Button */}
           {!isBloomed && !prefersReduced && (
             <div className="relative z-20 flex flex-col items-center justify-center">
               <button
@@ -139,7 +132,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
             </div>
           )}
 
-          {/* Name Reveal & Role Presentation once spell is cast or on reduced-motion */}
+          {/* Name Reveal & Role Presentation */}
           {(isBloomed || prefersReduced) && (
             <NameReveal
               isTriggered={isBloomed || prefersReduced}

@@ -21,13 +21,11 @@ const GoldenOrb: React.FC<GoldenOrbProps> = ({ isHovered, isBloomed }) => {
     const t = state.clock.getElapsedTime();
 
     if (isBloomed) {
-      // Bloom outward transition
       meshRef.current.scale.lerp(new THREE.Vector3(12, 12, 12), delta * 2.2);
       if (glowRef.current) {
         glowRef.current.scale.lerp(new THREE.Vector3(16, 16, 16), delta * 2.5);
       }
     } else {
-      // Gentle mystical breathing pulse
       const baseScale = isHovered ? 1.25 : 1.0;
       const pulse = Math.sin(t * 2.6) * 0.08;
       const targetScale = baseScale + pulse;
@@ -45,7 +43,6 @@ const GoldenOrb: React.FC<GoldenOrbProps> = ({ isHovered, isBloomed }) => {
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Outer subtle halo sphere */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[0.42, 32, 32]} />
         <meshBasicMaterial
@@ -56,7 +53,6 @@ const GoldenOrb: React.FC<GoldenOrbProps> = ({ isHovered, isBloomed }) => {
         />
       </mesh>
 
-      {/* Core solid glowing orb */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[0.3, 32, 32]} />
         <meshStandardMaterial
@@ -68,7 +64,6 @@ const GoldenOrb: React.FC<GoldenOrbProps> = ({ isHovered, isBloomed }) => {
         />
       </mesh>
 
-      {/* Point lights illuminating surrounding environment */}
       <pointLight
         position={[0, 0, 0]}
         color="#c9a24b"
@@ -93,7 +88,7 @@ export const IntroCanvas: React.FC<IntroCanvasProps> = ({
   const sparkleCount = isMobile ? (isBloomed ? 45 : 20) : (isBloomed ? 110 : 45);
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none">
+    <div className="fixed inset-0 w-screen h-screen pointer-events-none z-0">
       <Canvas
         camera={{ position: [0, 0, 4.5], fov: 45 }}
         dpr={[1, 2]}
@@ -107,7 +102,6 @@ export const IntroCanvas: React.FC<IntroCanvasProps> = ({
 
         <GoldenOrb isHovered={isHovered} isBloomed={isBloomed} />
 
-        {/* Ambient drift of golden sparkles */}
         <Sparkles
           count={sparkleCount}
           scale={isBloomed ? 14 : 7}
@@ -117,7 +111,6 @@ export const IntroCanvas: React.FC<IntroCanvasProps> = ({
           opacity={isBloomed ? 0.9 : 0.6}
         />
 
-        {/* Postprocessing bloom & cinematic vignette */}
         <EffectComposer multisampling={0}>
           <Bloom
             luminanceThreshold={0.25}
